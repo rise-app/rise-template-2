@@ -19,6 +19,6 @@
 
 <slot></slot>
 
-<RecentlyViewed />
-<Brands />
+<!--<RecentlyViewed />-->
+<!--<Brands />-->
 <Newsletter />

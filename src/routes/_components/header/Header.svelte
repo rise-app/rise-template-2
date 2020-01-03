@@ -6,6 +6,10 @@
   import Search from './Search.svelte'
   import Currency from '../Currency.svelte'
   import Categories from './Categories.svelte'
+  import Cart from './Cart.svelte'
+  import Wishlist from './Wishlist.svelte'
+  import LevelOne from './LevelOne.svelte'
+  import LevelThree from './LevelThree.svelte'
 
   // IMPORTS
   export let segment,
@@ -22,6 +26,7 @@
 
 
   let selectWidth = '55px';
+
   function resizeSelect(event) {
     console.log('EVENT', event)
     // selectWidth = '300px';
@@ -30,23 +35,6 @@
 </script>
 <style type="text/scss">
   @import "../../../theme/variables";
-
-  .header-level--1 {
-    background: $gray-100;
-
-    nav {
-      height: 30px;
-
-      .list-inline {
-        margin: 0px;
-
-        .list-inline-item {
-          margin-left: $list-inline-padding;
-        }
-      }
-
-    }
-  }
 
   .header-level--2 {
     background: $white;
@@ -124,30 +112,7 @@
 <!-- Header -->
 
 <header class="header">
-  <div class="header-level--1">
-    <div class="container">
-      <div class="row">
-        <div class="col-sm-12">
-          <nav class="nav d-flex justify-content-between text-muted">
-            <div class="nav-item">
-              <small>{ layout.headers.callout_one.message }</small>
-            </div>
-            <div class="nav-item">
-              <ul class="list-inline">
-                {#each layout.headers.social as s, i}
-                  <li class="list-inline-item">
-                    <a href="{s.link}">
-                      <i class="fab {s.src}" title="{s.title}"></i>
-                    </a>
-                  </li>
-                {/each}
-              </ul>
-            </div>
-          </nav>
-        </div>
-      </div>
-    </div>
-  </div>
+  <LevelOne />
 
   <div class="header-level--2">
     <div class="container">
@@ -185,12 +150,12 @@
             <ul class="navbar-nav mt-2 mt-lg-0">
               <li class="nav-item">
                 <a class="nav-link" href="/wishlist">
-                  <i class="fa fa-heart" />
+                  <Wishlist wishlist={wishlist} />
                 </a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="/cart">
-                  <i class="fa fa-shopping-cart" />
+                  <Cart cart={cart} />
                 </a>
               </li>
               {#if isLoggedIn }
@@ -217,7 +182,5 @@
       </nav>
     </div>
   </div>
-  <div class="header-level--3">
-    <Categories {primary_navigation_campaigns }></Categories>
-  </div>
+  <LevelThree {segment} {primary_navigation_campaigns} />
 </header>
