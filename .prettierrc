@@ -1,0 +1,9 @@
+{
+  "semi": false,
+  "singleQuote": true,
+  "trailingComma": "es5",
+  "endOfLine": "lf",
+  "pluginSearchDirs": ["."],
+  "svelteStrictMode": false,
+  "svelteBracketNewLine": true
+}
