@@ -17,6 +17,7 @@
   import Brands from '../../_components/Brands.svelte'
 </script>
 
+
 <slot></slot>
 
 <!--<RecentlyViewed />-->

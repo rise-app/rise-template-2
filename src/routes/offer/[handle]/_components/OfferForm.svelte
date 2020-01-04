@@ -2,9 +2,10 @@
   // MODULES
   import { createEventDispatcher } from 'svelte'
   import { form, bindClass } from 'svelte-forms'
+  import ListErrors from '../../../_components/ListErrors.svelte'
 
   // IMPORTS
-  export let offer = {}, value, inProgress = false, preloading = false
+  export let offer = {}, errors, value = {}, inProgress = false, preloading = false
 
   // LOGIC
 
@@ -24,6 +25,8 @@
     }
   )
 
+  $: disableBtn = ($offerForm.dirty && !$offerForm.valid) || inProgress || !!preloading
+
   const dispatch = createEventDispatcher()
 
   /**
@@ -31,16 +34,32 @@
    * @param event
    */
   function submit(event) {
-    dispatch('offer', value)
+    dispatch('addItem', value)
+  }
+
+  function increaseQty(qty) {
+    value.quantity = qty + 1
+  }
+
+  function decreaseQty(qty) {
+    value.quantity = qty - 1
   }
 
 </script>
 
+<style type="text/scss">
+  @import "../../../../theme/variables";
+</style>
+
+
 <form on:submit|preventDefault={submit}>
+  <ListErrors {errors} />
   <fieldset class="form-group form-label-group">
     <div class="input-group mb-3">
       <div class="input-group-prepend">
-        <span class="input-group-text">-</span>
+        <a on:click={e => decreaseQty(value.quantity)} class="input-group-text">
+          <i class="fa fa-minus" />
+        </a>
       </div>
       <input
         type="number"
@@ -55,7 +74,9 @@
         use:bindClass="{{ form: offerForm, name: 'quantity', invalid: 'is-invalid' }}"
       >
       <div class="input-group-append">
-        <span class="input-group-text">+</span>
+        <a on:click={e => increaseQty(value.quantity)} class="input-group-text">
+          <i class="fa fa-plus" />
+        </a>
       </div>
     </div>
     {#if $offerForm.quantity.errors.includes('required')}
@@ -75,4 +96,12 @@
       />
     </div>
   {/if}
+
+  <button
+    class="btn btn-primary"
+    type="submit"
+    disabled={disableBtn}
+  >
+    Add to Cart
+  </button>
 </form>

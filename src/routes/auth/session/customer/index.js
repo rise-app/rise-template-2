@@ -2,11 +2,15 @@ import { rise } from 'sdk'
 import * as config from 'config'
 
 export function get(req, res) {
+  const channel_uuid = req.session && req.session.channel && req.session.channel.channel_uuid
+    ? req.session.channel.channel_uuid
+    : config.rise.default_channel
+
   rise.channelAuth.sessionCustomer({}, {
     session: req.session.session_uuid,
     token: req.session.token,
     params: {
-      channel_uuid: req.session.channel.channel_uuid || config.rise.default_channel
+      channel_uuid: channel_uuid
     }
   })
     .then(response => {
@@ -24,12 +28,15 @@ export function get(req, res) {
 
 export function put(req, res) {
   const customer = req.body
+  const channel_uuid = req.session && req.session.channel && req.session.channel.channel_uuid
+    ? req.session.channel.channel_uuid
+    : config.rise.default_channel
 
   rise.channelAuth.updateSessionCustomer(customer, {
     session: req.session.session_uuid,
     token: req.session.token,
     params: {
-      channel_uuid: req.session.channel.channel_uuid || config.rise.default_channel
+      channel_uuid: channel_uuid
     }
   })
     .then(response => {

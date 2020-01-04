@@ -1,20 +1,102 @@
+<script context="module">
+  import { rise } from 'sdk'
+  import { riseQuery, pluckQuery } from 'query'
+  import { rise as riseConfig } from 'config'
+
+  // the (optional) preload function takes a
+  // `{ path, params, query }` object and turns it into
+  // the data we need to render the page
+  export async function preload({path, params, query}, {token, session_uuid, channel}) {
+    // const {handle} = params
+    //
+    // // Fixes deep nested objects
+    // let variants_query = riseQuery(pluckQuery(query, 'vq'))
+    //
+    // const offerReq = async (_handle) => {
+    //   if (_handle) {
+    //     return rise.channelPublicOffer.getByHandle({}, {
+    //       session: session_uuid,
+    //       token: token,
+    //       params: {
+    //         handle: _handle
+    //       }
+    //     })
+    //   } else {
+    //     return Promise.resolve()
+    //   }
+    // }
+    //
+    // const variantsReq = async (_handle) => {
+    //   if (_handle) {
+    //     return rise.channelPublicOfferVariant.listVariantsByHandle({}, {
+    //       session: session_uuid,
+    //       token: token,
+    //       params: {
+    //         handle: _handle
+    //       },
+    //       query: riseQuery(variants_query)
+    //     })
+    //   } else {
+    //     Promise.resolve()
+    //   }
+    // }
+    //
+    //
+    // return Promise.all([
+    //   offerReq(handle),
+    //   variantsReq(handle)
+    // ])
+    //         .then(([
+    //                  offer = {},
+    //                  variants = {}
+    //                ]) => {
+    //           return {
+    //             offer: offer.data,
+    //
+    //             variants_query,
+    //             variants: variants.data,
+    //             variants_total: variants.total,
+    //             variants_offset: variants.offset,
+    //             variants_limit: variants.limit,
+    //           }
+    //         })
+    //         .catch(err => {
+    //           return this.error(err)
+    //         })
+  }
+
+</script>
+
 <script>
   // MODULES
   import { goto, stores } from '@sapper/app'
+  import { get, put, post } from 'utils'
+  import { onMount } from 'svelte'
 
   // COMPONENTS
   import ImageLoader from '../_components/ImageLoader'
   import Currency from '../_components/Currency'
+  import CartItem from './_components/CartItem.svelte'
 
   // INCLUDES
-  const { preloading, page, session } = stores()
+  const {preloading, page, session} = stores()
 
   // LOGIC
 
-
-
   $: cart = $session.cart || {}
-  $: items = $session.cart ? $session.cart.items : []
+  $: items = $session.cart && $session.cart.items ? $session.cart.items : []
+
+  onMount(async () => {
+    return get(`auth/session/cart`, {})
+      .then(response => {
+        console.log('brk response 1!', response)
+        return get(`auth/session/cart/items`, {})
+      })
+      .then(response => {
+        console.log('brk response 2!', response)
+        $session.cart.items = response.data
+      })
+  })
 
 </script>
 <style type="text/scss">
@@ -182,57 +264,60 @@
           <div class="cart_items">
             <ul class="cart_list">
               {#each items as item, i (item.item_uuid)}
-                <li class="cart_item clearfix">
-                  <div class="cart_item_image">
-                    <ImageLoader
-                      src={item.primary_image.src}
-                      alt="{item.variant_sku}"
-                    />
-                  </div>
-                  <div class="cart_item_info d-flex flex-md-row flex-column justify-content-between">
-                    <div class="cart_item_name cart_info_col">
-                      <div class="cart_item_title">Name</div>
-                      <div class="cart_item_text">
-                        { item.variant_title || item.offer_title }
-                      </div>
-                    </div>
-                    <div class="cart_item_color cart_info_col">
-                      <div class="cart_item_title">Color</div>
-                      <div class="cart_item_text">
-                        <span style="background-color:#999999;"></span>Silver
-                      </div>
-                    </div>
-                    <div class="cart_item_quantity cart_info_col">
-                      <div class="cart_item_title">Quantity</div>
-                      <div class="cart_item_text">
-                        { item.quantity || 0 }
-                      </div>
-                    </div>
-                    <div class="cart_item_price cart_info_col">
-                      <div class="cart_item_title">Price</div>
-                      <div class="cart_item_text">
-                        <Currency
-                          price={item.price_per_unit}
-                          currency={item.currency}
-                        />
-                      </div>
-                    </div>
-                    <div class="cart_item_total cart_info_col">
-                      <div class="cart_item_title">Total</div>
-                      <div class="cart_item_text">
-                        <Currency
-                          price={item.price_total}
-                          currency={item.currency}
-                        />
-                      </div>
-                    </div>
+              <CartItem {item} />
+<!--                <li class="cart_item clearfix">-->
+<!--                  <div class="cart_item_image">-->
+<!--                    <ImageLoader-->
+<!--                      src={item.primary_image.src}-->
+<!--                      alt="{item.variant_sku}"-->
+<!--                    />-->
+<!--                  </div>-->
+<!--                  <div class="cart_item_info d-flex flex-md-row flex-column justify-content-between">-->
+<!--                    <div class="cart_item_name cart_info_col">-->
+<!--                      <div class="cart_item_title">Name</div>-->
+<!--                      <div class="cart_item_text">-->
+<!--                        { item.variant_title || item.offer_title }-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                    <div class="cart_item_color cart_info_col">-->
+<!--                      <div class="cart_item_title">Color</div>-->
+<!--                      <div class="cart_item_text">-->
+<!--                        <span style="background-color:#999999;"></span>Silver-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                    <div class="cart_item_quantity cart_info_col">-->
+<!--                      <div class="cart_item_title">Quantity</div>-->
+<!--                      <div class="cart_item_text">-->
+<!--                        { item.quantity || 0 }-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                    <div class="cart_item_price cart_info_col">-->
+<!--                      <div class="cart_item_title">Price</div>-->
+<!--                      <div class="cart_item_text">-->
+<!--                        <Currency-->
+<!--                          price={item.price_per_unit}-->
+<!--                          currency={item.currency}-->
+<!--                        />-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                    <div class="cart_item_total cart_info_col">-->
+<!--                      <div class="cart_item_title">Total</div>-->
+<!--                      <div class="cart_item_text">-->
+<!--                        <Currency-->
+<!--                          price={item.price_total}-->
+<!--                          currency={item.currency}-->
+<!--                        />-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                </li>-->
+              {:else}
+                <li>
+                  <div class="text-center mt-5">
+                    <h2>Cart Empty</h2>
+                    <p>It looks like this list is empty...</p>
                   </div>
                 </li>
-              {:else}
-                <div class="text-center mt-5">
-                  <h2>Cart Empty</h2>
-                  <p>It looks like this list is empty...</p>
-                </div>
               {/each}
 <!--              <li class="cart_item clearfix">-->
 <!--                <div class="cart_item_image"><img src="images/shopping_cart.jpg" alt=""></div>-->

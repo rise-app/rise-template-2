@@ -243,7 +243,6 @@
   *********************************/
 
   .shop {
-    background: #FFFFFF;
     padding-top: 80px;
     padding-bottom: 139px;
   }
