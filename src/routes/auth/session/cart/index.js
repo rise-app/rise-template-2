@@ -1,5 +1,6 @@
 import { rise } from 'sdk'
 import * as config from 'config'
+import { utils } from '../../../../node_modules/sdk'
 
 export function get(req, res) {
   const channel_uuid = req.session && req.session.channel && req.session.channel.channel_uuid
@@ -14,9 +15,15 @@ export function get(req, res) {
     }
   })
     .then(response => {
-      res.setHeader('Content-Type', 'application/json')
       req.session.cart = response.data
-      res.end(JSON.stringify({ ...response }))
+
+      return utils.saveSession(req)
+        .then(() => {
+          // req.session.save( function(err) {
+          res.setHeader('Content-Type', 'application/json')
+          return res.end(JSON.stringify({...response}))
+        })
+
     })
     .catch(err => {
       console.log('auth/session/cart', err)
@@ -38,9 +45,14 @@ export function put(req, res) {
     }
   })
     .then(response => {
-      res.setHeader('Content-Type', 'application/json')
       req.session.cart = response.data
-      res.end(JSON.stringify({ ...response }))
+
+      return utils.saveSession(req)
+        .then(() => {
+          // req.session.save( function(err) {
+          res.setHeader('Content-Type', 'application/json')
+          return res.end(JSON.stringify({...response }))
+        })
     })
     .catch(err => {
       console.log('auth/session/cart', err)

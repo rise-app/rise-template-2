@@ -1,4 +1,4 @@
-import { rise } from 'sdk'
+import { rise, utils } from 'sdk'
 import * as config from 'config'
 
 export function get(req, res) {
@@ -14,11 +14,15 @@ export function get(req, res) {
     }
   })
     .then(response => {
-      res.setHeader('Content-Type', 'application/json')
       // Update the customer in session
       req.session.customer = response.data
 
-      res.end(JSON.stringify({ customer: req.session.customer || null }))
+      return utils.saveSession(req)
+        .then(() => {
+          // req.session.save( function(err) {
+          res.setHeader('Content-Type', 'application/json')
+          return res.end(JSON.stringify({...response, customer: req.session.customer}))
+        })
     })
     .catch(err => {
       console.log('auth/session/customer', err)
@@ -40,11 +44,15 @@ export function put(req, res) {
     }
   })
     .then(response => {
-      res.setHeader('Content-Type', 'application/json')
       // Update the customer in session
       req.session.customer = response.data
 
-      res.end(JSON.stringify({ customer: req.session.customer || null }))
+      return utils.saveSession(req)
+        .then(() => {
+          // req.session.save( function(err) {
+          res.setHeader('Content-Type', 'application/json')
+          return res.end(JSON.stringify({...response, customer: req.session.customer}))
+        })
     })
     .catch(err => {
       console.log('auth/session/customer', err)

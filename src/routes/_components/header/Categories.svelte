@@ -60,7 +60,7 @@
 
   .cat_menu li a
   {
-    color: lighten($navbar-dark-color, 95);
+    color: $white;
     display: block;
     position: relative;
     font-size: 13px;

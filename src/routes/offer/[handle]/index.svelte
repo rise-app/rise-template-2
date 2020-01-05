@@ -106,7 +106,7 @@
     //
     inProgress = true
 
-    return post(`auth/session/cart/items`, item)
+    return post(`auth/session/cart/items`, item, {}, $session.token, $session.session_uuid)
       .then(response => {
         console.log('brk response!', response)
 
@@ -116,15 +116,26 @@
           errors = response.errors ? response.errors : [response.error]
         }
 
+        // If the request returned a session_uuid, update the local session.session_uuid
+        if (response.session_uuid || response.session) {
+          $session.session_uuid = response.session_uuid || response.session
+        }
+        // If the request returned a token, update the local session.token
+        if (response.token) {
+          $session.token = response.token
+        }
+        // If the request returned the full cart, update the local session.cart
+        if (response.cart) {
+          $session.cart = response.cart
+        }
 
+        // If this returned the new cart item(s), then redirect to the cart view
         if (response.data) {
           return goto('/cart')
         }
         else {
           return response
         }
-
-        return response
       })
       .catch(err => {
         inProgress = false

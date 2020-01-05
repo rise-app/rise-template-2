@@ -71,7 +71,7 @@
 </style>
 
 
-<li class="cart_item clearfix">
+<div class="list-group-item cart_item clearfix">
   <div class="cart_item_image">
     <ImageLoader
       src={image.src}
@@ -85,12 +85,16 @@
       <div class="cart_item_text">
         { item.variant_title || item.offer_title }
       </div>
+      <div class="cart_item_subtext">
+        { item.variant_sku || item.sku }
+      </div>
     </div>
     <div class="cart_item_color cart_info_col">
-      <div class="cart_item_title">Color</div>
-      <div class="cart_item_text">
-        <span style="background-color:#999999;"></span>Silver
-      </div>
+      <!-- TODO SHOW OPTIONS -->
+<!--      <div class="cart_item_title">Color</div>-->
+<!--      <div class="cart_item_text">-->
+<!--        <span style="background-color:#999999;"></span>Silver-->
+<!--      </div>-->
     </div>
     <div class="cart_item_quantity cart_info_col">
       <div class="cart_item_title">Quantity</div>
@@ -117,4 +121,4 @@
       </div>
     </div>
   </div>
-</li>
+</div>

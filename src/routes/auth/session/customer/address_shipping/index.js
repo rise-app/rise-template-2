@@ -6,7 +6,7 @@ export function get(req, res) {
     ? req.session.channel.channel_uuid
     : config.rise.default_channel
 
-  rise.channelAuth.sessionUser({}, {
+  rise.channelAuth.sessionCustomerShipping({}, {
     session: req.session.session_uuid,
     token: req.session.token,
     params: {
@@ -14,28 +14,28 @@ export function get(req, res) {
     }
   })
     .then(response => {
-      req.session.user = response.data
+      req.session.customer.address_shipping = response.data
 
       return utils.saveSession(req)
         .then(() => {
           // req.session.save( function(err) {
           res.setHeader('Content-Type', 'application/json')
-          return res.end(JSON.stringify({...response}))
+          return res.end(JSON.stringify({...response, customer: req.session.customer}))
         })
     })
     .catch(err => {
-      console.log('auth/session/user', err)
+      console.log('auth/session/customer', err)
       res.status('401').end(JSON.stringify(err))
     })
 }
 
 export function put(req, res) {
-  const user = req.body
+  const customer = req.body
   const channel_uuid = req.session && req.session.channel && req.session.channel.channel_uuid
     ? req.session.channel.channel_uuid
     : config.rise.default_channel
 
-  rise.channelAuth.updateSessionUser(user, {
+  rise.channelAuth.setSessionCustomerShipping(customer, {
     session: req.session.session_uuid,
     token: req.session.token,
     params: {
@@ -43,17 +43,17 @@ export function put(req, res) {
     }
   })
     .then(response => {
-      req.session.user = response.data
+      req.session.customer.address_shipping = response.data
 
       return utils.saveSession(req)
         .then(() => {
           // req.session.save( function(err) {
           res.setHeader('Content-Type', 'application/json')
-          return res.end(JSON.stringify({...response}))
+          return res.end(JSON.stringify({...response, customer: req.session.customer}))
         })
     })
     .catch(err => {
-      console.log('auth/session/user', err)
+      console.log('auth/session/customer', err)
       res.status('401').end(JSON.stringify(err))
     })
 }

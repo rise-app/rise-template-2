@@ -14,7 +14,6 @@ export function post(req, res) {
     }
   })
     .then((response) => {
-      console.log('BRK response', response)
 
       if (response.data) {
         req.session.session_uuid = response.session
@@ -27,11 +26,12 @@ export function post(req, res) {
       }
 
       res.setHeader('Content-Type', 'application/json')
-
       res.end(JSON.stringify(response))
+
     })
     .catch(err => {
       console.log('auth/login', err)
+
       delete req.session.token
       delete req.session.channel
       delete req.session.user
