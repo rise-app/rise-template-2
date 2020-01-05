@@ -28,7 +28,7 @@
 
     const variantsReq = async (_handle) => {
       if (_handle) {
-        return rise.channelPublicOfferVariant.listVariantsByHandle({}, {
+        return rise.channelPublicOfferVariant.listByHandle({}, {
           session: session_uuid,
           token: token,
           params: {

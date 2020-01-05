@@ -67,6 +67,9 @@
   // LOGIC
   const { preloading, page, session } = stores()
 
+  let path = ''
+  $: path = $page.path
+
   let progress = 50
   preloading.subscribe(value => {
     if (value !== true) {
@@ -204,7 +207,9 @@
     user={$session.user}
     customer={$session.customer}
     cart={$session.cart}
-    primary_navigation_campaigns={primary_navigation_campaigns}
+    {primary_navigation_campaigns}
+    preloading={$preloading}
+    {path}
   ></Header>
   <main>
     <!--  TODO handle with over time of load-->
@@ -221,6 +226,6 @@
     user={$session.user}
     customer={$session.customer}
     cart={$session.cart}
-    primary_navigation_campaigns={primary_navigation_campaigns}
+    {primary_navigation_campaigns}
   ></Footer>
 </div>

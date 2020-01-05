@@ -21,8 +21,20 @@
      * @param _handle
      * @return {Promise<import("../..").RiSEResponse>}
      */
+    console.log('BRK offers query', offers_query)
     const offersReq = async(_handle) => {
       if (_handle) {
+        // if (offers_query.term) {
+        //   return rise.channelPublicCampaign.searchOffersByHandle({}, {
+        //     session: session_uuid,
+        //     token: token,
+        //     params: {
+        //       handle: _handle
+        //     },
+        //     query: riseQuery(offers_query)
+        //   })
+        // }
+        // else {
         return rise.channelPublicCampaign.listOffersByHandle({}, {
           session: session_uuid,
           token: token,
@@ -31,14 +43,25 @@
           },
           query: riseQuery(offers_query)
         })
+        // }
       }
       else {
-        return rise.channelPublicOffer.list({}, {
-          session: session_uuid,
-          token: token,
-          params: {},
-          query: riseQuery(offers_query)
-        })
+        if (offers_query.term) {
+          return rise.channelPublicOffer.search({}, {
+            session: session_uuid,
+            token: token,
+            params: {},
+            query: riseQuery(offers_query)
+          })
+        }
+        else {
+          return rise.channelPublicOffer.list({}, {
+            session: session_uuid,
+            token: token,
+            params: {},
+            query: riseQuery(offers_query)
+          })
+        }
       }
     }
 

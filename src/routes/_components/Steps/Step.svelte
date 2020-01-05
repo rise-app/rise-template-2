@@ -1,14 +1,25 @@
 <script>
+  // MODULES
   import { getContext, onMount, tick } from 'svelte'
 
+  // INCLUDES
   import { getId, getNumber } from './id'
+
+  // COMPONENTS
   import { STEPS } from './Steps.svelte'
 
-  let stepEl
+
+  // IMPORTS
+  // export let dirty = false, valid = true
+
+  // LOGIC
+  let stepEl, dirty = false, valid = true
 
   const step = {
     number: getNumber(),
-    id: getId()
+    id: getId(),
+    dirty: dirty,
+    valid: valid
   }
   const { registerStep, registerStepElement, selectStep, selectedStep, controls, locks, columns } = getContext(STEPS)
 

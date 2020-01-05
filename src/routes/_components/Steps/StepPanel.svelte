@@ -7,10 +7,16 @@
   import { STEPS } from './Steps.svelte'
 
   // LOGIC
+  // export let
+  let dirty = false, valid = true
+
   const panel = {
     number: getNumber(),
-    id: getId()
+    id: getId(),
+    dirty: dirty,
+    valid: valid
   }
+
   const { registerPanel, selectedPanel, labeledBy } = getContext(STEPS)
 
   registerPanel(panel)

@@ -8,7 +8,7 @@
   /*  padding: 0;*/
 	/*}*/
 
-  .stepper-row:before {
+  .step-list:before {
     top: 14px;
     bottom: 0;
     position: absolute;
@@ -20,6 +20,6 @@
   }
 </style>
 
-<div role="steplist" class="row stepper-row setup-panel svelte-steps__step-list">
+<div role="steplist" class="row step-list setup-panel svelte-steps__step-list">
   <slot></slot>
 </div>
