@@ -23,6 +23,7 @@
   import AddressForm from '../../_components/forms/AddressForm.svelte'
   import Currency from '../../_components/Currency.svelte'
   import ListErrors from '../../_components/ListErrors.svelte'
+  import { CreditCard } from '../../_components/CreditCard'
 
   // LOGIC
   const {preloading, session, page} = stores()
@@ -184,8 +185,12 @@
       })
   }
 
+  // Load the countries on mounting of the component
   onMount(async () => {
-    return listCountries()
+    await listCountries()
+    if (billingFormValue.country_code || shippingFormValue.country_code) {
+      await listCountryProvinces(billingFormValue.country_code || shippingFormValue.country_code)
+    }
   })
 
 </script>
@@ -274,7 +279,7 @@
           </div>
           <div class="list-group-item">
             <h5 class="text-muted">Payment Information</h5>
-
+            <CreditCard />
           </div>
         </div>
       </StepPanel>
