@@ -88,6 +88,24 @@
       })
   }
 
+  async function logout() {
+    inProgress = true
+    await post(`auth/logout`)
+
+    // AUTHENTICATION
+    $session.token = null
+    // We can keep the session id
+
+    // UTILITY
+    $session.channel = null
+    $session.user = null
+    $session.cart = null
+    $session.customer = null
+
+    inProgress = false
+    return goto('/login')
+  }
+
 </script>
 
 <style type="text/scss">
@@ -136,6 +154,14 @@
               preloading="{$preloading}"
               on:save={e=> updateUser(e.detail)}
             />
+          </div>
+          <div class="list-group-item pt-2 pb-2">
+            <button
+              class="btn btn-outline-primary"
+              on:click={logout}
+            >
+              Logout
+            </button>
           </div>
         </div>
       </div>

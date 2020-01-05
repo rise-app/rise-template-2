@@ -47,14 +47,15 @@
 </style>
 
 
-<div class="product_grid">
-  <div class="product_grid_border"></div>
+<div class="product_grid row">
   {#each offers as offer, i (offer.offer_uuid )}
    <Offer {offer} index={i} />
   {:else}
-    <div class="text-center mt-5">
-      <h2>List Empty</h2>
-      <p>It looks like this list is empty...</p>
+    <div class="col-12 mt-5">
+      <div class="text-center">
+        <h2>List Empty</h2>
+        <p>It looks like this list is empty...</p>
+      </div>
     </div>
   {/each}
 </div>

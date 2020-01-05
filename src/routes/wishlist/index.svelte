@@ -156,9 +156,9 @@
       <div class="col-lg-10 offset-lg-1">
         <div class="wishlist_container">
           <div class="wishlist_title">Shopping Wishlist</div>
-          <div class="wishlist_items">
-            <ul class="wishlist_list">
-              <li class="wishlist_item clearfix">
+          <div class="list-group wishlist_items">
+            <div class="list-item wishlist_list">
+              <div class="wishlist_item clearfix">
                 <div class="wishlist_item_image"><img src="images/shopping_wishlist.jpg" alt=""></div>
                 <div class="wishlist_item_info d-flex flex-md-row flex-column justify-content-between">
                   <div class="wishlist_item_name wishlist_info_col">
@@ -182,21 +182,22 @@
                     <div class="wishlist_item_text">$2000</div>
                   </div>
                 </div>
-              </li>
-            </ul>
+              </div>
+            </div>
           </div>
 
           <!-- Order Total -->
           <div class="order_total">
             <div class="order_total_content text-md-right">
-              <div class="order_total_title">Order Total:</div>
-              <div class="order_total_amount">$2000</div>
+              <div class="order_total_title">Wishlist Total:</div>
+              <div class="order_total_amount">$0</div>
             </div>
           </div>
 
           <div class="wishlist_buttons">
-            <button type="button" class="button wishlist_button_clear">Add to Wishlist</button>
-            <button type="button" class="button wishlist_button_checkout">Add to Wishlist</button>
+            <button type="button" class="btn btn-outline-secondary wishlist_button_checkout">
+              Add to Cart
+            </button>
           </div>
         </div>
       </div>

@@ -126,7 +126,7 @@
   {/if}
 
   <button
-     class="btn btn-lg btn-primary pull-xs-right"
+     class="btn btn-primary pull-xs-right"
      type="submit"
      disabled={!$accountForm.dirty || ($accountForm.dirty && !$accountForm.valid) || inProgress || !!preloading}
   >

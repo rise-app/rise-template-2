@@ -79,7 +79,7 @@
           Sign Up
         </h1>
         <h4 class="text-muted text-center mb-4">
-          <small>Let’s Sign Up first and then create a RiSE channel</small>
+          <small>Let’s Sign Up first and start shopping.</small>
         </h4>
 
         <div class="card">
