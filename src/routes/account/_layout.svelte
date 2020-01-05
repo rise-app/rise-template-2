@@ -1,6 +1,4 @@
 <script>
-  // import {}
-
   export let segment
 
 </script>
@@ -41,6 +39,13 @@
             class:active={segment === 'billing'}
           >
             Billing
+          </a>
+          <a
+            href="/account/shipping"
+            class="list-group-item list-group-item-action"
+            class:active={segment === 'shipping'}
+          >
+            Shipping
           </a>
         </div>
       </div>

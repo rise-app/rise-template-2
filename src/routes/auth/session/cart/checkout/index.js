@@ -15,13 +15,23 @@ export function put(req, res) {
     }
   })
     .then(response => {
-      req.session.cart = response.data.ChannelCart
 
-      return utils.saveSession(req)
-        .then(() => {
-          // req.session.save( function(err) {
-          res.setHeader('Content-Type', 'application/json')
-          return res.end(JSON.stringify({...response, cart: req.session.cart}))
+      return rise.channelAuth.sessionCart(cart, {
+        session: req.session.session_uuid,
+        token: req.session.token,
+        params: {
+          channel_uuid: channel_uuid
+        }
+      })
+        .then(_response => {
+          req.session.cart = _response.data
+
+          return utils.saveSession(req)
+            .then(() => {
+              // req.session.save( function(err) {
+              res.setHeader('Content-Type', 'application/json')
+              return res.end(JSON.stringify({...response, cart: req.session.cart}))
+            })
         })
     })
     .catch(err => {
