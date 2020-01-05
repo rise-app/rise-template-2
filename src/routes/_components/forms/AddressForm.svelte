@@ -168,45 +168,52 @@
     {/if}
   </fieldset>
 
-  <fieldset class="form-group">
-    <input
-      class="form-control"
-      type="text"
-      placeholder="Address Line 3"
-      bind:value={value.address_3}
-      use:bindClass="{{ form: addressForm, name: 'address_3', invalid: 'is-invalid' }}"
-    />
-    {#if $addressForm.address_3.errors.includes('required')}
-      <div class="invalid-feedback">Address Line 3 is required</div>
-    {/if}
-  </fieldset>
-
-  <fieldset class="form-group">
-    <input
-      class="form-control"
-      type="text"
-      placeholder="City"
-      bind:value={value.city}
-      use:bindClass="{{ form: addressForm, name: 'city', invalid: 'is-invalid' }}"
-    />
-    {#if $addressForm.city.errors.includes('required')}
-      <div class="invalid-feedback">City is required</div>
-    {/if}
-  </fieldset>
-
-  <fieldset class="form-group">
-    <input
-      class="form-control"
-      type="text"
-      placeholder="Postal Code"
-      bind:value={value.postal_code}
-      use:bindClass="{{ form: addressForm, name: 'postal_code', invalid: 'is-invalid' }}"
-    />
-    {#if $addressForm.postal_code.errors.includes('required')}
-      <div class="invalid-feedback">Postal Code is required</div>
-    {/if}
-  </fieldset>
-
+  <div class="form-row">
+    <div class="col">
+      <fieldset class="form-group">
+        <input
+          class="form-control"
+          type="text"
+          placeholder="Address Line 3"
+          bind:value={value.address_3}
+          use:bindClass="{{ form: addressForm, name: 'address_3', invalid: 'is-invalid' }}"
+        />
+        {#if $addressForm.address_3.errors.includes('required')}
+          <div class="invalid-feedback">Address Line 3 is required</div>
+        {/if}
+      </fieldset>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col">
+      <fieldset class="form-group">
+        <input
+          class="form-control"
+          type="text"
+          placeholder="City"
+          bind:value={value.city}
+          use:bindClass="{{ form: addressForm, name: 'city', invalid: 'is-invalid' }}"
+        />
+        {#if $addressForm.city.errors.includes('required')}
+          <div class="invalid-feedback">City is required</div>
+        {/if}
+      </fieldset>
+    </div>
+    <div class="col">
+      <fieldset class="form-group">
+        <input
+          class="form-control"
+          type="text"
+          placeholder="Postal Code"
+          bind:value={value.postal_code}
+          use:bindClass="{{ form: addressForm, name: 'postal_code', invalid: 'is-invalid' }}"
+        />
+        {#if $addressForm.postal_code.errors.includes('required')}
+          <div class="invalid-feedback">Postal Code is required</div>
+        {/if}
+      </fieldset>
+    </div>
+  </div>
 
   <fieldset class="form-group">
     <select

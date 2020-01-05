@@ -22,6 +22,7 @@
 
   // LOGIC
 
+  let isLoggedIn = false
   $: isLoggedIn = !!(user && user.username)
 
 

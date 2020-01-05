@@ -52,7 +52,11 @@
       password_confirm: {
         value: value.password_confirm,
         validators: ['required', 'min:8']
-      }
+      },
+      accepts_marketing: {
+        value: value.accepts_marketing,
+        validators: []
+      },
     }),
     {
       stopAtFirstError: false,

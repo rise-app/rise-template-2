@@ -14,6 +14,8 @@
   let errors = null
   let inProgress = false
 
+  let redirect, formValue
+  $: redirect = $page.query && $page.query.redirect ? $page.query.redirect : '/account'
   $: formValue = {
     name_prefix: null,
     name_first: null,
@@ -27,8 +29,6 @@
     password: null,
     password_confirm: null
   }
-
-  $: redirect = $page.query && $page.query.redirect ? $page.query.redirect : '/account'
 
   async function submit(event) {
     inProgress = true

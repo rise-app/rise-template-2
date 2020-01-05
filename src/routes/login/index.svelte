@@ -14,6 +14,7 @@
 
   const {preloading, session, page} = stores()
 
+  let redirect, formValue
   $: redirect = $page.query && $page.query.redirect ? $page.query.redirect : '/'
 
   $: formValue = {
