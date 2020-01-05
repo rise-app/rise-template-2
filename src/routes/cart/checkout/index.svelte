@@ -22,11 +22,12 @@
   import RegisterForm from '../../_components/forms/RegisterForm.svelte'
   import AddressForm from '../../_components/forms/AddressForm.svelte'
   import Currency from '../../_components/Currency.svelte'
+  import ListErrors from '../../_components/ListErrors.svelte'
 
   // LOGIC
   const {preloading, session, page} = stores()
 
-  let cart = {}, items = []
+  let cart = {}, items = [], errors
   $: cart = $session.cart || {}
   $: items = $session.cart && $session.cart.items ? $session.cart.items : []
 
@@ -113,26 +114,74 @@
 
   }
 
-  async function setBilling() {
-
-  }
-
-  async function setShipping() {
-
-  }
-
-  async function register() {
-
-  }
-
-  async function setPayment() {
-
-  }
-
-  async function checkout() {
+  async function setBilling(address) {
     inProgress = true
-    inProgress = false
-    return goto('/cart/checkout/confirmation')
+    return put(`auth/session/cart/address_billing`, address, {}, $session.token, $session.session_uuid)
+      .then(response => {
+        inProgress = false
+        console.log('brk response!', response)
+      })
+      .catch(err => {
+        inProgress = false
+        errors = err
+      })
+  }
+
+  async function setShipping(address) {
+    inProgress = true
+    return put(`auth/session/cart/address_shipping`, address, {}, $session.token, $session.session_uuid)
+      .then(response => {
+        inProgress = false
+        console.log('brk response!', response)
+      })
+      .catch(err => {
+        inProgress = false
+        errors = err
+      })
+  }
+
+  async function register(user) {
+
+  }
+
+  async function setPayment(payment) {
+    inProgress = true
+    return put(`auth/session/cart/payment_details`, payment, {}, $session.token, $session.session_uuid)
+      .then(response => {
+        inProgress = false
+        console.log('brk response!', response)
+      })
+      .catch(err => {
+        inProgress = false
+        errors = err
+      })
+  }
+
+  async function setFulfillment(fulfillment) {
+    inProgress = true
+    return put(`auth/session/cart/fulfillment_details`, fulfillment, {}, $session.token, $session.session_uuid)
+      .then(response => {
+        inProgress = false
+        console.log('brk response!', response)
+      })
+      .catch(err => {
+        inProgress = false
+        errors = err
+      })
+  }
+
+  async function checkout(details) {
+    inProgress = true
+    return put(`auth/session/cart/checkout`, details, {}, $session.token, $session.session_uuid)
+      .then(response => {
+        inProgress = false
+        console.log('brk response!', response)
+        return goto(`/cart/checkout/confirmation?order_uuid=${response.data.ChannelOrder.order_uuid}`)
+      })
+      .catch(err => {
+        inProgress = false
+        errors = err
+      })
   }
 
   onMount(async () => {
@@ -174,7 +223,9 @@
       </div>
     </div>
 
-    <Steps on:complete={checkout}>
+    <ListErrors {errors} />
+
+    <Steps on:complete={checkout} {inProgress} preloading="{$preloading}">
       <StepList>
         <Step>Account Setup</Step>
         <Step>Billing Info</Step>
@@ -217,7 +268,7 @@
                 {provinces}
                 loading="{ countriesLoading || provincesLoading}"
                 on:countrySelected="{e => listCountryProvinces(e.detail)}"
-                on:address={setBilling}
+                on:address={e=> setBilling(e.detail)}
               />
             </div>
           </div>
@@ -258,7 +309,7 @@
                 {provinces}
                 loading="{ countriesLoading || provincesLoading}"
                 on:countrySelected="{e => listCountryProvinces(e.detail)}"
-                on:address={setShipping}
+                on:address={e=> setShipping(e.detail)}
               />
               {/if}
             </div>

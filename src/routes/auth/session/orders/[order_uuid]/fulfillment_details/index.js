@@ -6,15 +6,17 @@ export function get(req, res) {
     ? req.session.channel.channel_uuid
     : config.rise.default_channel
 
-  rise.channelAuth.sessionCart({}, {
+  const order_uuid = req.params.order_uuid
+
+  rise.channelAuth.getSessionCustomerOrderFulfillment({}, {
     session: req.session.session_uuid,
     token: req.session.token,
     params: {
-      channel_uuid: channel_uuid
+      channel_uuid: channel_uuid,
+      order_uuid: order_uuid
     }
   })
     .then(response => {
-      req.session.cart = response.data
 
       return utils.saveSession(req)
         .then(() => {
@@ -22,21 +24,20 @@ export function get(req, res) {
           res.setHeader('Content-Type', 'application/json')
           return res.end(JSON.stringify({...response}))
         })
-
     })
     .catch(err => {
-      console.log('auth/session/cart', err)
+      console.log('auth/session/order', err)
       res.status('401').end(JSON.stringify(err))
     })
 }
 
 export function put(req, res) {
-  const cart = req.body
+  const order = req.body
   const channel_uuid = req.session && req.session.channel && req.session.channel.channel_uuid
     ? req.session.channel.channel_uuid
     : config.rise.default_channel
 
-  rise.channelAuth.updateSessionCart(cart, {
+  rise.channelAuth.setSessionCustomerOrderFulfillment(order, {
     session: req.session.session_uuid,
     token: req.session.token,
     params: {
@@ -44,17 +45,16 @@ export function put(req, res) {
     }
   })
     .then(response => {
-      req.session.cart = response.data
 
       return utils.saveSession(req)
         .then(() => {
           // req.session.save( function(err) {
           res.setHeader('Content-Type', 'application/json')
-          return res.end(JSON.stringify({...response }))
+          return res.end(JSON.stringify({...response}))
         })
     })
     .catch(err => {
-      console.log('auth/session/cart', err)
+      console.log('auth/session/order', err)
       res.status('401').end(JSON.stringify(err))
     })
 }
