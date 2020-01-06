@@ -47,6 +47,13 @@
           >
             Shipping
           </a>
+          <!-- <a
+            href="#"
+            class="list-group-item list-group-item-action"
+            class:active={segment === 'shipping'}
+          >
+            Influencer Area
+          </a> -->
         </div>
       </div>
       <div class="col-9">
