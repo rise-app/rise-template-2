@@ -82,6 +82,7 @@
     cursor: pointer;
     box-shadow: 0px 1px 5px rgba(0,0,0,0.1);
     margin-right: 16px;
+    margin-top: 5px;
     text-align: center;
   }
   .footer_social ul li i
@@ -191,10 +192,13 @@
           <div class="footer_social">
             <ul>
               <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
+              <li><a href="#"><i class="fab fa-instagram"></i></a></li>
               <li><a href="#"><i class="fab fa-twitter"></i></a></li>
               <li><a href="#"><i class="fab fa-youtube"></i></a></li>
               <li><a href="#"><i class="fab fa-google"></i></a></li>
               <li><a href="#"><i class="fab fa-vimeo-v"></i></a></li>
+              <li><a href="#"><i class="fab fa-github"></i></a></li>
+              <li><a href="#"><i class="fab fa-snapchat"></i></a></li>
             </ul>
           </div>
         </div>
@@ -226,12 +230,13 @@
 
       <div class="col-lg-2">
         <div class="footer_column">
+        <!-- <div class="footer_title">Quick Links</div> -->
           <ul class="footer_list footer_list_2">
-<!--            <li><a href="#">Video Games & Consoles</a></li>-->
-<!--            <li><a href="#">Accessories</a></li>-->
-<!--            <li><a href="#">Cameras & Photos</a></li>-->
+           <!-- <li><a href="#">Influencer Area</a></li> -->
+           <!-- <li><a href="#">My Account</a></li> -->
+           <!-- <li><a href="/wishlist">Wish List</a></li> -->
 <!--            <li><a href="#">Hardware</a></li>-->
-<!--            <li><a href="#">Computers & Laptops</a></li>-->
+<!--            <li><a href="#">Computers & Laptops</a></li> -->
           </ul>
         </div>
       </div>
@@ -242,6 +247,9 @@
           <ul class="footer_list">
             {#if isLoggedIn }
             <li><a href="/account">My Account</a></li>
+            {/if}
+            {#if isLoggedIn }
+            <li><a href="#">Influencer Area</a></li>
             {/if}
             {#if isLoggedIn }
             <li><a href="/account/orders">Order Tracking</a></li>
