@@ -168,6 +168,28 @@
   {
     margin-right: 0px;
   }
+  .disclaimer
+  {
+    width: 100%;
+    background: #fafafa;
+  }
+  .disclaimer_container
+  {
+    width: 100%;
+    // height: 56px;
+    border:3px;
+    border-color:#12b899;
+    padding: 1em;
+  }
+  .disclaimer_content
+  {
+    font-size: 12px;
+    color: rgba(0,0,0,0.6);
+  }
+  .disclaimer_content span
+  {
+    font-weight: 500;
+  }
 </style>
 
 <!-- Footer -->
@@ -266,6 +288,23 @@
     </div>
   </div>
 </footer>
+
+<!-- Disclaimer -->
+
+<div class="disclaimer">
+  <div class="container">
+    <div class="row">
+      <div class="col">
+
+        <div class="disclaimer_container d-flex flex-sm-row flex-column align-items-center justify-content-start">
+          <div class="disclaimer_content">
+          All products contain less than .3% THC.his product is not for use by or sale to persons under the age of 18 or the age of majority in your state or province of residence, whichever is older (e.g., 21 years of age). This product should be used only as directed on the label. It should not be used if you are pregnant or nursing. Consult with a physician before use if you have a serious medical condition or use prescription medications. A Doctor's advice should be sought before using this and any supplemental dietary product. All trademarks and copyrights are property of their respective owners. These statements have not been evaluated by the FDA. This product is not intended to diagnose, treat, cure or prevent any disease. By using this site, you agree to follow the Privacy Policy and all Terms & Conditions printed on this site. Void Where Prohibited by Law.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Copyright -->
 
