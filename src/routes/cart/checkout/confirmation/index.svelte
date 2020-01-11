@@ -8,7 +8,7 @@
   // the data we need to render the page
   export async function preload({path, params, query}, {token, session_uuid, channel}) {
 
-    const order_uuid = query.order_uuid
+    const { order_uuid } = query
 
     // Fixes deep nested objects
     let items_query = riseQuery(pluckQuery(query, 'iq'))
@@ -22,7 +22,8 @@
             order_uuid: _order_uuid
           }
         })
-      } else {
+      }
+      else {
         return Promise.resolve()
       }
     }
@@ -35,10 +36,11 @@
           params: {
             order_uuid: _order_uuid
           },
-          query: riseQuery(items_query)
+          query: items_query
         })
-      } else {
-        Promise.resolve()
+      }
+      else {
+        return Promise.resolve()
       }
     }
 
@@ -62,7 +64,7 @@
         }
       })
       .catch(err => {
-        return this.error(err)
+        return this.error(err.statusCode || 404, err)
       })
   }
 

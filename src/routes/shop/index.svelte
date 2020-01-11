@@ -22,6 +22,7 @@
      * @return {Promise<import("../..").RiSEResponse>}
      */
     console.log('BRK offers query', offers_query)
+
     const offersReq = async(_handle) => {
       if (_handle) {
         // if (offers_query.term) {
@@ -238,21 +239,21 @@
   // Pagination Events
   function goToPage({detail}) {
     const {page} = detail
-    const _query = pageQuery(offers_query, page, offers_limit, 'oq')
+    const _query = pageQuery(query, page, offers_limit, 'oq')
     goto(`${path}?${_query}`)
     return false
   }
 
   function nextPage({detail}) {
     const {page} = detail
-    const _query = pageQuery(offers_query, page, offers_limit, 'oq')
+    const _query = pageQuery(query, page, offers_limit, 'oq')
     goto(`${path}?${_query}`)
     return false
   }
 
   function prevPage({detail}) {
     const {page} = detail
-    const _query = pageQuery(offers_query, page, offers_limit, 'oq')
+    const _query = pageQuery(query, page, offers_limit, 'oq')
     goto(`${path}?${_query}`)
     return false
   }

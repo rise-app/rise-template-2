@@ -24,13 +24,25 @@ export function put(req, res) {
         }
       })
         .then(_response => {
-          req.session.cart = _response.data
+
+          if (response.session) {
+            req.session.session_uuid = response.session
+          }
+          if (response.token) {
+            req.session.token = response.token
+          }
+          if (response.data) {
+            req.session.cart = _response.data
+          }
 
           return utils.saveSession(req)
             .then(() => {
               // req.session.save( function(err) {
               res.setHeader('Content-Type', 'application/json')
-              return res.end(JSON.stringify({...response, cart: req.session.cart}))
+              return res.end(JSON.stringify({
+                ...response,
+                cart: req.session.cart
+              }))
             })
         })
     })

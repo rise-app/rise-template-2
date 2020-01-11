@@ -32,7 +32,7 @@
 
 
   let isLoggedIn = false, term, inProgress
-  $: isLoggedIn = !!(user && user.username)
+  $: isLoggedIn = !!(user && user.user_uuid)
 
 
   let selectWidth = '55px';

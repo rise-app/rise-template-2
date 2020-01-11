@@ -2,6 +2,7 @@
   // MODULES
   import { goto, stores } from '@sapper/app'
   import { post } from 'utils.js'
+  import { brand } from 'config'
 
   // COMPONENTS
   import ListErrors from '../_components/ListErrors.svelte'
@@ -37,31 +38,47 @@
     formValue = event.detail
 
     // Internal Server API
-    const response = await post(`auth/register`, event.detail)
+    return post(`auth/register`, event.detail)
+      .then(response => {
+
+        console.log('brk reg', response)
+
+        if (response.errors || response.error) {
+          errors = response.errors ? response.errors : [response.error]
+        }
+
+        inProgress = false
+
+        if (response.data) {
+
+          const sessionValues = {
+            session_uuid: response.session,
+            token: response.token,
+            user: response.data.ChannelUser,
+            cart: response.data.ChannelCart,
+            customer: response.data.ChannelCustomer,
+            ...$session,
+          }
+          session.set(sessionValues)
+
+          return goto(redirect)
+        }
+        else {
+          return
+        }
+
+      })
       .catch(err => {
         console.log('BRK Unexpected Error', err)
         inProgress = false
+        errors = err
+        return
       })
-
-    if (response.errors || response.error) {
-      errors = response.errors ? response.errors : [response.error]
-    }
-
-    inProgress = false
-
-    if (response.data) {
-      $session.session_uuid = response.session
-      $session.token = response.token
-      $session.user = response.data.ChannelUser
-      $session.cart = response.data.ChannelCart
-      $session.customer = response.data.ChannelCustomer
-      goto(redirect)
-    }
   }
 </script>
 
 <svelte:head>
-  <title>Sign up • rise</title>
+  <title>Sign up • { brand.name }</title>
 </svelte:head>
 
 <div class="auth-page">
@@ -91,6 +108,7 @@
               inProgress={ inProgress }
               preloading="{ $preloading }"
               on:register={submit}
+              errors={errors}
             ></RegisterForm>
           </div>
         </div>

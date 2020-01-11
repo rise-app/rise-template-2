@@ -101,6 +101,8 @@
     border-radius: 5px;
     margin-left: 15px;
     margin-right: 15px;
+    padding: 0px;
+    height: 100%;
   }
 
   .page_nav li {
@@ -144,7 +146,7 @@
   }
 </style>
 
-<nav class="shop_page_nav d-flex flex-row">
+<nav class="shop_page_nav d-flex flex-row justify-content-center">
 
   <div
     class="page_prev d-flex flex-column align-items-center justify-content-center"

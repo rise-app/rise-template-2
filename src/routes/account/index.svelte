@@ -8,6 +8,10 @@
   // the data we need to render the page
   export async function preload({path, params, query}, {token, session_uuid, channel}) {
 
+    if (!token) {
+      return this.redirect(302, '/login')
+    }
+
     const userReq = async () => {
       return rise.channelAuth.sessionUser({}, {
         session: session_uuid,
@@ -90,19 +94,26 @@
 
   async function logout() {
     inProgress = true
+
     await post(`auth/logout`)
 
-    // AUTHENTICATION
-    $session.token = null
-    // We can keep the session id
+    const sessionValues = {
+      session_uuid: $session.session_uuid
+    }
 
-    // UTILITY
-    $session.channel = null
-    $session.user = null
-    $session.cart = null
-    $session.customer = null
+    session.set(sessionValues)
+    //
+    // // AUTHORIZATION
+    // $session.token = null
+    //
+    // // UTILITY
+    // $session.user = null
+    // $session.cart = null
+    // $session.customer = null
+    // $session.channel = null
 
     inProgress = false
+
     return goto('/login')
   }
 

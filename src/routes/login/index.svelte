@@ -2,6 +2,7 @@
   // MODULES
   import { goto, stores } from '@sapper/app'
   import { post } from 'utils.js'
+  import { brand } from 'config'
 
   // COMPONENTS
   import ListErrors from '../_components/ListErrors.svelte'
@@ -28,36 +29,43 @@
     // Set the reactive value
     formValue = event.detail
 
-    const response = await post(`auth/login`, event.detail)
+    return post(`auth/login`, event.detail)
+      .then(response => {
+
+        if (response.errors || response.error) {
+          errors = response.errors ? response.errors : [response.error]
+        }
+
+        inProgress = false
+
+        if (response.data) {
+          // Authentication
+          $session.session_uuid = response.session
+          $session.token = response.token
+
+          // Utilities
+          $session.channel = response.data.Channel
+          $session.user = response.data.ChannelUser
+          $session.cart = response.data.ChannelCart
+          $session.customer = response.data.ChannelCustomer
+
+          return goto(redirect)
+        }
+        else {
+          return
+        }
+      })
       .catch(err => {
         console.log('BRK Unexpected Error', err)
         inProgress = false
+        errors = err
+        return
       })
-
-    inProgress = false
-
-    if (response.errors || response.error) {
-      errors = response.errors ? response.errors : [response.error]
-    }
-
-    if (response.data) {
-      // Authentication
-      $session.session_uuid = response.session
-      $session.token = response.token
-
-      // Utilities
-      $session.channel = response.data.Channel
-      $session.user = response.data.ChannelUser
-      $session.cart = response.data.ChannelCart
-      $session.customer = response.data.ChannelCustomer
-
-      goto(redirect)
-    }
   }
 </script>
 
 <svelte:head>
-  <title>Sign in • rise</title>
+  <title>Sign in • { brand.name }</title>
 </svelte:head>
 
 <div class="auth-page">
@@ -88,6 +96,7 @@
             inProgress={ inProgress }
             preloading="{ $preloading }"
             on:login={ submit }
+            errors={errors}
           >
           </LoginForm>
           </div>

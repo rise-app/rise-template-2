@@ -1,7 +1,8 @@
 <script context="module">
   import { rise } from 'sdk'
   import { riseQuery, pluckQuery } from 'query'
-  import { rise as riseConfig } from 'config'
+  import { rise as riseConfig, brand } from 'config'
+  import { get, put, post } from 'utils'
 
   // the (optional) preload function takes a
   // `{ path, params, query }` object and turns it into
@@ -70,7 +71,6 @@
 <script>
   // MODULES
   import { goto, stores } from '@sapper/app'
-  import { get, put, post } from 'utils'
   import { onMount } from 'svelte'
 
   // COMPONENTS
@@ -104,11 +104,11 @@
   $: items = $session.cart && $session.cart.items ? $session.cart.items : []
 
   onMount(async () => {
-    // return getCartReq()
-    //   .then(response => {
-    //     console.log('brk response 1!', response)
-    //     return getCartItemsReq()
-    //   })
+    return getCartReq()
+      .then(response => {
+        console.log('brk response 1!', response)
+        // return getCartItemsReq()
+      })
     //   .then(response => {
     //     console.log('brk response 2!', response)
     //   })
@@ -117,9 +117,10 @@
 </script>
 <style type="text/scss">
   @import "../../theme/variables";
-/*********************************
-4. Cart
-*********************************/
+
+  /*********************************
+  4. Cart
+  *********************************/
 
   .cart_section
   {
@@ -138,7 +139,7 @@
   }
   .cart_list
   {
-    border: solid 1px #e8e8e8;
+    border: solid 1px $gray-100;
     box-shadow: 0px 1px 5px rgba(0,0,0,0.1);
   }
   .cart_item
@@ -204,7 +205,7 @@
     width: 100%;
     height: 60px;
     margin-top: 30px;
-    border: solid 1px #e8e8e8;
+    border: solid 1px $gray-100;
     box-shadow: 0px 1px 5px rgba(0,0,0,0.1);
     padding-right: 46px;
     padding-left: 15px;
@@ -237,8 +238,8 @@
     font-weight: 400;
     line-height: 48px;
     color: rgba(0,0,0,0.5);
-    background: #FFFFFF;
-    border: solid 1px #b2b2b2;
+    background: $white;
+    border: solid 1px $gray-300;
     padding-left: 35px;
     padding-right: 35px;
     outline: none;
@@ -247,8 +248,8 @@
   }
   .cart_button_clear:hover
   {
-    border-color: #0e8ce4;
-    color: #0e8ce4;
+    border-color: theme-color('primary');
+    color: theme-color('primary');
   }
   .cart_button_checkout
   {
@@ -257,7 +258,7 @@
     font-size: 18px;
     font-weight: 400;
     line-height: 48px;
-    color: #FFFFFF;
+    color: $white;
     padding-left: 35px;
     padding-right: 35px;
     outline: none;
@@ -267,7 +268,7 @@
 </style>
 
 <svelte:head>
-  <title>Cart</title>
+  <title>Cart • { brand.name }</title>
 </svelte:head>
 
 <!-- Cart -->
@@ -281,7 +282,7 @@
           <div class="cart_items">
             <div class="list-group cart_list">
               {#each items as item, i (item.item_uuid)}
-              <CartItem {item} />
+                <CartItem {item} />
               {:else}
                 <div class="list-group-item">
                   <div class="text-center mt-5">
@@ -335,7 +336,7 @@
 <!--            <button-->
 <!--              type="button"-->
 <!--              class="button cart_button_clear"-->
-<!--            >Add to Cart</button>-->
+<!--            >Make Wishlist</button>-->
             <a
               href="/cart/checkout"
               class="btn btn-primary cart_button_checkout"
