@@ -1,18 +1,18 @@
 <script>
-  export let segment,
-          brand = {},
-          user,
-          customer,
-          cart,
-          primary_navigation_campaigns = []
+  export let
+    segment,
+    brand = {},
+    user,
+    customer,
+    cart,
+    primary_navigation_campaigns = []
 
 
   // LOGIC
   let copyYear = new Date().getFullYear()
 
-
-
-  $: isLoggedIn = !!(user && user.username)
+  let isLoggedIn = false
+  $: isLoggedIn = !!(user && user.user_uuid)
 
 
 </script>
@@ -71,6 +71,7 @@
   .footer_social
   {
     margin-top: 27px;
+    padding: 0px;
   }
   .footer_social ul li
   {
@@ -111,6 +112,7 @@
   .footer_column ul
   {
     margin-top: 7px;
+    padding: 0px;
   }
   .footer_list li
   {
