@@ -50,7 +50,11 @@
     shippingFormValue,
     shippingMatchesBilling = true
 
+  // WEIRD but works
   $: if ($session.user) {
+    isLoggedIn = !!($session.user && $session.user.user_uuid)
+  }
+  else {
     isLoggedIn = !!($session.user && $session.user.user_uuid)
   }
 

@@ -8,9 +8,6 @@
 
   // LOGIC
 
-  // Make's sure the the password and password confirm fields match
-  const matchPassword = value => ({ valid: value === value.password, name: 'matchPassword' })
-
   // The account form
   const accountForm = form(() => ({
       name_prefix: {
@@ -73,10 +70,51 @@
   function submit(event) {
     dispatch('save', value)
   }
+  function password(event) {
+    dispatch('password', true)
+  }
 
 </script>
 
 <form on:submit|preventDefault={submit}>
+<!--  <div class="form-row">-->
+<!--    <fieldset class="col form-group form-label-group">-->
+<!--      <input-->
+<!--        id="inputName_first"-->
+<!--        class="form-control form-control-lg"-->
+<!--        type="text"-->
+<!--        placeholder="First Name"-->
+<!--        required-->
+<!--        autofocus-->
+<!--        bind:value={value.name_first}-->
+<!--        use:bindClass="{{ form: accountForm, name: 'name_first', invalid: 'is-invalid' }}"-->
+<!--      />-->
+<!--      <label for="inputName_first">First Name</label>-->
+
+<!--      {#if $accountForm.name_first.errors.includes('required')}-->
+<!--        <div class="invalid-feedback">First Name is required</div>-->
+<!--      {/if}-->
+<!--    </fieldset>-->
+
+<!--    <fieldset class="col form-group form-label-group">-->
+<!--      <input-->
+<!--      id="inputName_last"-->
+<!--      class="form-control form-control-lg"-->
+<!--      type="text"-->
+<!--      placeholder="Last Name"-->
+<!--      required-->
+<!--      autofocus-->
+<!--      bind:value={value.name_last}-->
+<!--      use:bindClass="{{ form: accountForm, name: 'name_last', invalid: 'is-invalid' }}"-->
+<!--      />-->
+<!--      <label for="inputName_last">Last Name</label>-->
+
+<!--      {#if $accountForm.name_last.errors.includes('required')}-->
+<!--        <div class="invalid-feedback">Last Name is required</div>-->
+<!--      {/if}-->
+<!--    </fieldset>-->
+<!--  </div>-->
+
   <fieldset class="form-group form-label-group">
     <input
       id="inputEmail"
@@ -95,20 +133,30 @@
     {/if}
   </fieldset>
 
+  <div>
+    <a
+      class="btn"
+      on:click={password}
+    >
+      Change Password
+    </a>
+  </div>
+
 <!--  <fieldset class="form-group form-label-group">-->
 <!--    <input-->
-<!--      id="inputPassword"-->
+<!--      id="inputPhone"-->
 <!--      class="form-control form-control-lg"-->
-<!--      type="password"-->
-<!--      placeholder="Password"-->
-<!--      bind:value={value.password}-->
-<!--      use:bindClass="{{ form: accountForm, name: 'password', invalid: 'is-invalid' }}"-->
+<!--      type="text"-->
+<!--      placeholder="Phone"-->
+<!--      required-->
+<!--      autofocus-->
+<!--      bind:value={value.phone}-->
+<!--      use:bindClass="{{ form: accountForm, name: 'phone', invalid: 'is-invalid' }}"-->
 <!--    />-->
-<!--    <label for="inputPassword">Password</label>-->
-<!--    {#if $accountForm.password.errors.includes('required')}-->
-<!--      <div class="invalid-feedback">Password is required</div>-->
-<!--    {:else if $accountForm.password.errors.includes('min') }-->
-<!--      <div class="invalid-feedback">Password must be at least 8 characters</div>-->
+<!--    <label for="inputPhone">Phone</label>-->
+
+<!--    {#if $accountForm.phone.errors.includes('required')}-->
+<!--      <div class="invalid-feedback">Phone is required</div>-->
 <!--    {/if}-->
 <!--  </fieldset>-->
 

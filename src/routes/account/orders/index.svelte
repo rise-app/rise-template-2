@@ -53,6 +53,7 @@
   // MODULES
   import { goto, stores } from '@sapper/app'
   import Currency from '../../_components/Currency.svelte'
+  import { titlecase } from 'pipes'
 
   // COMPONENTS
 
@@ -118,6 +119,22 @@
 
   @import "../../../theme/variables";
 
+  .status--open {
+    background: $green;
+  }
+  .status--paid {
+    background: $green;
+  }
+  .status--fulfilled {
+    background: $green;
+  }
+  .status--closed {
+    background: $red;
+  }
+  .status--pending {
+
+  }
+
 </style>
 
 <svelte:head>
@@ -128,14 +145,27 @@
 
 <div class="list-group">
   {#each orders as order, i (order.order_uuid)}
-    <div class="list-group-item">
-      <a href="/account/orders/{order.order_uuid}">
-        <h5>{order.name}</h5>
-        <p class="">
-          <Currency price={order.total_price} currency={order.currency} />
-        </p>
-      </a>
-    </div>
+    <a class="list-group-item list-group-item-action" href="/account/orders/{order.order_uuid}">
+      <div class="order">
+        <h5>#{order.name}</h5>
+        <div class="order_body">
+          <p class="">
+            <Currency price={order.total_price} currency={order.currency} />
+          </p>
+        </div>
+        <div class="order_status">
+          <span class="badge badge-secondary status--{order.status}">
+            <i class="fa fa-eye" ></i> { titlecase(order.status) }
+          </span>
+          <span class="badge badge-secondary status--{order.status_financial}">
+            <i class="fa fa-dollar-sign" ></i> { titlecase(order.status_financial) }
+          </span>
+          <span class="badge badge-secondary status--{order.status_fulfillment}">
+            <i class="fa fa-truck" ></i> { titlecase(order.status_fulfillment) }
+          </span>
+        </div>
+      </div>
+    </a>
   {:else}
     <div class="list-group-item text-muted text-center">
       <h2>No Orders yet</h2>

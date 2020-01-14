@@ -77,6 +77,44 @@
 </script>
 
 <form on:submit|preventDefault={submit}>
+  <div class="form-row">
+    <fieldset class="col form-group form-label-group">
+      <input
+        id="inputName_first"
+        class="form-control form-control-lg"
+        type="text"
+        placeholder="First Name"
+        required
+        autofocus
+        bind:value={value.name_first}
+        use:bindClass="{{ form: customerForm, name: 'name_first', invalid: 'is-invalid' }}"
+      />
+      <label for="inputName_first">First Name</label>
+
+      {#if $customerForm.name_first.errors.includes('required')}
+        <div class="invalid-feedback">First Name is required</div>
+      {/if}
+    </fieldset>
+
+    <fieldset class="col form-group form-label-group">
+      <input
+        id="inputName_last"
+        class="form-control form-control-lg"
+        type="text"
+        placeholder="Last Name"
+        required
+        autofocus
+        bind:value={value.name_last}
+        use:bindClass="{{ form: customerForm, name: 'name_last', invalid: 'is-invalid' }}"
+      />
+      <label for="inputName_last">Last Name</label>
+
+      {#if $customerForm.name_last.errors.includes('required')}
+        <div class="invalid-feedback">Last Name is required</div>
+      {/if}
+    </fieldset>
+  </div>
+
   <fieldset class="form-group form-label-group">
     <input
       id="inputEmail"
@@ -92,6 +130,24 @@
 
     {#if $customerForm.email.errors.includes('required')}
       <div class="invalid-feedback">Email is required</div>
+    {/if}
+  </fieldset>
+
+  <fieldset class="form-group form-label-group">
+    <input
+      id="inputPhone"
+      class="form-control form-control-lg"
+      type="text"
+      placeholder="Phone"
+      required
+      autofocus
+      bind:value={value.phone}
+      use:bindClass="{{ form: customerForm, name: 'phone', invalid: 'is-invalid' }}"
+    />
+    <label for="inputPhone">Phone</label>
+
+    {#if $customerForm.phone.errors.includes('required')}
+      <div class="invalid-feedback">Phone is required</div>
     {/if}
   </fieldset>
 

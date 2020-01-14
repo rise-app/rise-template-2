@@ -10,7 +10,7 @@
   // LOGIC
 
   // Make's sure the the password and password confirm fields match
-  const matchPassword = value => ({ valid: value === value.password, name: 'matchPassword' })
+  const matchPassword = value => ({ valid: value.password_confirm === value.password, name: 'matchPassword' })
 
   // The register form
   const registerForm = form(() => ({
