@@ -14,9 +14,11 @@ export function post(req, res) {
       console.log('BRK response', response)
 
       if (response.data) {
+        // Auth
         req.session.session_uuid = response.session
         req.session.token = response.token
 
+        // Utilities
         req.session.channel = response.data.Channel
         req.session.user = response.data.ChannelUser
         req.session.cart = response.data.ChannelCart
@@ -29,10 +31,13 @@ export function post(req, res) {
     })
     .catch(err => {
       console.log('auth/register', err)
+      // Auth
       delete req.session.token
+
+      // Utilities
       delete req.session.channel
       delete req.session.user
-      delete req.session.cart
+      // delete req.session.cart
       delete req.session.customer
 
       res.status('401').end(JSON.stringify(err))

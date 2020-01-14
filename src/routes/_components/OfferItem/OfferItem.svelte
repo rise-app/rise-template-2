@@ -28,7 +28,7 @@
     justify-content: center;
     align-items: center;
     position: relative;
-    background: #FFFFFF;
+    background: $white;
     cursor: pointer;
     padding-top: 40px;
     padding-bottom: 24px;
@@ -43,7 +43,7 @@
     right: 1px;
     width: 1px;
     height: calc(100% - 71px);
-    background: #e5e5e5;
+    background: $gray-100;
   }
 
   .offer_image {
@@ -68,7 +68,7 @@
   }
 
   .offer_item.discount {
-    color: #df3b3b;
+    color: $red;
   }
 
   .offer_price span {
@@ -86,7 +86,7 @@
     left: -2px;
     width: calc(100% + 4px);
     height: 1px;
-    background: #8d8d8d;
+    background: $gray-400;
     content: '';
   }
 
@@ -113,7 +113,7 @@
   }
 
   .offer_name div a:hover {
-    color: #0e8ce4;
+    color: theme-color('primary');
   }
 
   .offer_fav {
@@ -122,7 +122,7 @@
     right: 12px;
     width: 36px;
     height: 36px;
-    background: #FFFFFF;
+    background: $white;
     box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.1);
     border-radius: 50%;
     visibility: hidden;
@@ -147,7 +147,7 @@
     -ms-transform: translateX(-50%);
     -o-transform: translateX(-50%);
     transform: translateX(-50%);
-    color: #cccccc;
+    color: $gray-200;
     line-height: 36px;
     pointer-events: none;
     z-index: 0;
@@ -159,7 +159,7 @@
   }
 
   .offer_fav.active i {
-    color: red;
+    color: $red;
   }
 
   .offer_item:hover .offer_fav {
@@ -184,7 +184,7 @@
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    color: #FFFFFF;
+    color: $white;
     text-align: center;
     line-height: 36px;
     font-size: 12px;
@@ -192,14 +192,14 @@
 
   .offer_new {
     display: none;
-    background: #0e8ce4;
+    background: theme-color('primary');
     visibility: hidden;
     opacity: 0;
   }
 
   .offer_discount {
     display: none;
-    background: #df3b3b;
+    background: $red;
     visibility: hidden;
     opacity: 0;
   }
@@ -221,15 +221,19 @@
   </div>
   <div class="offer_content">
     <div class="offer_price">
-      <Currency price={ offer.price_channel } currency={ offer.currency } />
+      <Currency price={ offer.total_price_calculated || offer.price_channel } currency={ offer.currency } />
     </div>
     <div class="offer_name">
       <div>
-        <a href="/offer/{ offer.offer_handle || offer.handle }" tabindex="{index}">{ offer.title }</a>
+        <a href="/offer/{ offer.offer_handle || offer.handle }" tabindex="{index}">
+          { offer.title }
+        </a>
       </div>
     </div>
   </div>
-  <div class="offer_fav"><i class="fas fa-heart"></i></div>
+  <div class="offer_fav">
+    <i class="fas fa-heart"></i>
+  </div>
   <ul class="offer_marks">
     <li class="offer_mark offer_discount">-25%</li>
     <li class="offer_mark offer_new">new</li>

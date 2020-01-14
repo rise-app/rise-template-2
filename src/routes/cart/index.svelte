@@ -8,62 +8,41 @@
   // `{ path, params, query }` object and turns it into
   // the data we need to render the page
   export async function preload({path, params, query}, {token, session_uuid, channel}) {
-    // const {handle} = params
-    //
-    // // Fixes deep nested objects
-    // let variants_query = riseQuery(pluckQuery(query, 'vq'))
-    //
-    // const offerReq = async (_handle) => {
-    //   if (_handle) {
-    //     return rise.channelPublicOffer.getByHandle({}, {
-    //       session: session_uuid,
-    //       token: token,
-    //       params: {
-    //         handle: _handle
-    //       }
-    //     })
-    //   } else {
-    //     return Promise.resolve()
-    //   }
-    // }
-    //
-    // const variantsReq = async (_handle) => {
-    //   if (_handle) {
-    //     return rise.channelPublicOfferVariant.listVariantsByHandle({}, {
-    //       session: session_uuid,
-    //       token: token,
-    //       params: {
-    //         handle: _handle
-    //       },
-    //       query: riseQuery(variants_query)
-    //     })
-    //   } else {
-    //     Promise.resolve()
-    //   }
-    // }
-    //
-    //
-    // return Promise.all([
-    //   offerReq(handle),
-    //   variantsReq(handle)
-    // ])
-    //         .then(([
-    //                  offer = {},
-    //                  variants = {}
-    //                ]) => {
-    //           return {
-    //             offer: offer.data,
-    //
-    //             variants_query,
-    //             variants: variants.data,
-    //             variants_total: variants.total,
-    //             variants_offset: variants.offset,
-    //             variants_limit: variants.limit,
-    //           }
-    //         })
-    //         .catch(err => {
-    //           return this.error(err)
-    //         })
+
+    // Query for Cart Items
+    let items_query = riseQuery(pluckQuery(query, 'vq'))
+
+    const getCartReq = async () => {
+      return get(`auth/session/cart`, {}, token, session_uuid)
+    }
+
+    const itemsReq = async (_handle) => {
+      return get(`auth/session/cart/items`, {}, token, session_uuid)
+    }
+
+    return Promise.all([
+      getCartReq(),
+      Promise.resolve() // itemsReq(handle)
+    ])
+      .then(([
+         cart = {},
+         items = {}
+       ]) => {
+        return {
+          session_uuid: cart.session,
+
+          cart: cart.data,
+
+          items_query,
+          // items: items.data,
+          // items_total: items.total,
+          // items_offset: items.offset,
+          // items_limit: items.limit,
+        }
+      })
+      .catch(err => {
+        return this.error(err)
+      })
   }
 
 </script>
@@ -74,19 +53,29 @@
   import { onMount } from 'svelte'
 
   // COMPONENTS
-  import ImageLoader from '../_components/ImageLoader'
   import Currency from '../_components/Currency'
   import CartItem from './_components/CartItem.svelte'
 
+  // IMPORTS
+  export let session_uuid, cart = {}, items = []
+
   // INCLUDES
-  const {preloading, page, session} = stores()
+  const { preloading, page, session } = stores()
 
   // LOGIC
 
   async function getCartReq() {
     return get(`auth/session/cart`, {}, $session.token, $session.session_uuid)
       .then(response => {
-        $session.cart = response.data
+        const sessionValues = {
+          ...$session
+        }
+        if (response.data) {
+          sessionValues.cart = response.data
+        }
+
+        session.set(sessionValues)
+
         return response
       })
   }
@@ -94,25 +83,51 @@
   async function getCartItemsReq() {
     return get(`auth/session/cart/items`, {}, $session.token, $session.session_uuid)
       .then(response => {
-        $session.cart.items = response.data
+
+        console.log('brk response 2!', response)
+
+        const sessionValues = {
+          ...$session
+        }
+        if (response.cart) {
+          sessionValues.cart = response.cart
+        }
+
+        if (response.data) {
+          sessionValues.cart.items = response.data
+        }
+
+        session.set(sessionValues)
+
         return response
       })
   }
 
-  let cart = {}, items = []
-  $: cart = $session.cart || {}
-  $: items = $session.cart && $session.cart.items ? $session.cart.items : []
+  function updateStore() {
+    console.log('BRK updating store', cart, items)
 
-  onMount(async () => {
-    return getCartReq()
-      .then(response => {
-        console.log('brk response 1!', response)
-        // return getCartItemsReq()
-      })
-    //   .then(response => {
-    //     console.log('brk response 2!', response)
-    //   })
-  })
+    const sessionValues = {
+      ...$session
+    }
+    if (session_uuid) {
+      sessionValues.session_uuid = session_uuid
+    }
+
+    if (cart) {
+      sessionValues.cart = cart
+    }
+
+    // if (items) {
+    //   sessionValues.cart.items = items
+    // }
+
+    session.set(sessionValues)
+  }
+
+  $: updateStore()
+
+  let btnsDisabled
+  $: btnsDisabled = !cart.total_items
 
 </script>
 <style type="text/scss">
@@ -281,7 +296,7 @@
           <div class="cart_title">Shopping Cart</div>
           <div class="cart_items">
             <div class="list-group cart_list">
-              {#each items as item, i (item.item_uuid)}
+              {#each cart.items as item, i (item.item_uuid)}
                 <CartItem {item} />
               {:else}
                 <div class="list-group-item">
@@ -340,6 +355,7 @@
             <a
               href="/cart/checkout"
               class="btn btn-primary cart_button_checkout"
+              class:disabled={btnsDisabled}
             >
               Checkout
             </a>

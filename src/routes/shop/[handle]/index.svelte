@@ -209,6 +209,8 @@
   const {preloading, session, page} = stores()
 
   let title = campaign && campaign.title ? campaign.title : 'Shop'
+  let description = campaign ? campaign.description_seo || campaign.description : 'All Categories'
+  let tags = campaign ? campaign.tags : 'all'
   let image = campaign && campaign.image_primary ? campaign.image_primary : {}
 
   // subscribed value to path
@@ -277,6 +279,8 @@
 
 <svelte:head>
   <title>{ title }</title>
+  <meta name="description" content="{ description }">
+  <meta name="keywords" content="{ tags }">
 </svelte:head>
 
 <!-- Shop Campaign Slot -->

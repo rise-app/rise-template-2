@@ -26,6 +26,9 @@
   {
     max-width: 100%;
   }
+  .cart_info_col {
+    width: 15%;
+  }
   .cart_item_info
   {
     width: calc(100% - 133px);
@@ -35,6 +38,7 @@
   .cart_item_name
   {
     margin-left: 7.53%;
+    width: calc(100% - 133px);
   }
   .cart_item_title
   {
@@ -62,7 +66,11 @@
   }
   .cart_item_price
   {
-    text-align: right;
+    text-align: left;
+  }
+  .cart_item_quantity
+  {
+    text-align: center;
   }
   .cart_item_total
   {
@@ -83,7 +91,9 @@
     <div class="cart_item_name cart_info_col">
       <div class="cart_item_title">Name</div>
       <div class="cart_item_text">
-        { item.variant_title || item.offer_title }
+        <a href="/offer/{ item.offer_handle || item.handle }">
+          { item.variant_title || item.offer_title }
+        </a>
       </div>
       <div class="cart_item_subtext">
         { item.variant_sku || item.sku }
@@ -96,12 +106,6 @@
 <!--        <span style="background-color:#999999;"></span>Silver-->
 <!--      </div>-->
     </div>
-    <div class="cart_item_quantity cart_info_col">
-      <div class="cart_item_title">Quantity</div>
-      <div class="cart_item_text">
-        { item.quantity || 0 }
-      </div>
-    </div>
     <div class="cart_item_price cart_info_col">
       <div class="cart_item_title">Price</div>
       <div class="cart_item_text">
@@ -111,11 +115,17 @@
         />
       </div>
     </div>
+    <div class="cart_item_quantity cart_info_col">
+      <div class="cart_item_title">Quantity</div>
+      <div class="cart_item_text">
+        { item.quantity || 0 }
+      </div>
+    </div>
     <div class="cart_item_total cart_info_col">
       <div class="cart_item_title">Total</div>
       <div class="cart_item_text">
         <Currency
-          price={item.price_total}
+          price={item.total_price_calculated}
           currency={item.currency}
         />
       </div>

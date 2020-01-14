@@ -53,7 +53,10 @@ export function get(req, res) {
     })
     .catch(err => {
       console.log('auth/session/cart/items', err)
-      res.status('401').end(JSON.stringify(err))
+      const error = err.error ? { error: err.error } : err
+      res.setHeader('Content-Type', 'application/json')
+      res.statusCode = err.statusCode ? err.statusCode : 500
+      res.end(JSON.stringify(error))
     })
 }
 
@@ -71,6 +74,7 @@ export function post(req, res) {
     }
   })
     .then(response => {
+
       if (response.session) {
         req.session.session_uuid = response.session
       }
@@ -86,14 +90,14 @@ export function post(req, res) {
         }
       })
         .then(_response => {
-          if (response.session) {
-            req.session.session_uuid = response.session
+          if (_response.session) {
+            req.session.session_uuid = _response.session
           }
-          if (response.token) {
-            req.session.token = response.token
+          if (_response.token) {
+            req.session.token = _response.token
           }
           if (_response.data) {
-            req.session.cart = response.data
+            req.session.cart = _response.data
           }
           return [response, _response]
         })
@@ -107,7 +111,10 @@ export function post(req, res) {
         })
     })
     .catch(err => {
-      console.log('auth/session/cart', err)
-      res.status('401').end(JSON.stringify(err))
+      console.log('auth/session/cart/items', err)
+      const error = err.error ? { error: err.error } : err
+      res.setHeader('Content-Type', 'application/json')
+      res.statusCode = err.statusCode ? err.statusCode : 500
+      res.end(JSON.stringify(error))
     })
 }

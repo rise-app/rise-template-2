@@ -52,7 +52,7 @@
   import { goto, stores } from '@sapper/app'
   import { get, put, post } from 'utils'
   import AccountForm from '../_components/forms/AccountForm.svelte'
-  import ListErrors from '../_components/ListErrors.svelte'
+  import { ListErrors } from '../_components/ListErrors'
   import CustomerForm from '../_components/forms/CustomerForm.svelte'
 
   // COMPONENTS

@@ -7,6 +7,7 @@ export function put(req, res) {
     ? req.session.channel.channel_uuid
     : config.rise.default_channel
 
+  // Checkout the Current Session Cart
   rise.channelAuth.checkoutSessionCart(cart, {
     session: req.session.session_uuid,
     token: req.session.token,
@@ -16,6 +17,7 @@ export function put(req, res) {
   })
     .then(response => {
 
+      // Get the new Session Cart
       return rise.channelAuth.sessionCart(cart, {
         session: req.session.session_uuid,
         token: req.session.token,
@@ -25,13 +27,13 @@ export function put(req, res) {
       })
         .then(_response => {
 
-          if (response.session) {
-            req.session.session_uuid = response.session
+          if (_response.session) {
+            req.session.session_uuid = _response.session
           }
-          if (response.token) {
-            req.session.token = response.token
+          if (_response.token) {
+            req.session.token = _response.token
           }
-          if (response.data) {
+          if (_response.data) {
             req.session.cart = _response.data
           }
 
@@ -48,6 +50,9 @@ export function put(req, res) {
     })
     .catch(err => {
       console.log('auth/session/cart/checkout', err)
-      res.status('401').end(JSON.stringify(err))
+      const error = err.error ? { error: err.error } : err
+      res.setHeader('Content-Type', 'application/json')
+      res.statusCode = err.statusCode ? err.statusCode : 500
+      res.end(JSON.stringify(error))
     })
 }

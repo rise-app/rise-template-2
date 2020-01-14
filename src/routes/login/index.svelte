@@ -5,7 +5,7 @@
   import { brand } from 'config'
 
   // COMPONENTS
-  import ListErrors from '../_components/ListErrors.svelte'
+  import { ListErrors } from '../_components/ListErrors'
   import LoginForm from '../_components/forms/LoginForm.svelte'
 
   // LOGIC
@@ -32,6 +32,8 @@
     return post(`auth/login`, event.detail)
       .then(response => {
 
+        console.log('BRK login response', response)
+
         if (response.errors || response.error) {
           errors = response.errors ? response.errors : [response.error]
         }
@@ -39,15 +41,22 @@
         inProgress = false
 
         if (response.data) {
-          // Authentication
-          $session.session_uuid = response.session
-          $session.token = response.token
+          // Store the current Session Values
+          const sessionValues = {
+            // Authentication
+            session_uuid: response.session,
+            token: response.token,
 
-          // Utilities
-          $session.channel = response.data.Channel
-          $session.user = response.data.ChannelUser
-          $session.cart = response.data.ChannelCart
-          $session.customer = response.data.ChannelCustomer
+            // Utilities
+            user: response.data.ChannelUser,
+            cart: response.data.ChannelCart,
+            customer: response.data.ChannelCustomer,
+            channel: response.data.Channel,
+            ...$session,
+          }
+
+          // Update the Session Store
+          session.set(sessionValues)
 
           return goto(redirect)
         }

@@ -22,7 +22,7 @@
   import RegisterForm from '../../_components/forms/RegisterForm.svelte'
   import AddressForm from '../../_components/forms/AddressForm.svelte'
   import Currency from '../../_components/Currency.svelte'
-  import ListErrors from '../../_components/ListErrors.svelte'
+  import { ListErrors } from '../../_components/ListErrors'
   import { CreditCard } from '../../_components/CreditCard'
   import LoginForm from '../../_components/forms/LoginForm.svelte'
 
@@ -50,7 +50,9 @@
     shippingFormValue,
     shippingMatchesBilling = true
 
-  $: isLoggedIn = !!($session.user && $session.user.user_uuid)
+  $: if ($session.user) {
+    isLoggedIn = !!($session.user && $session.user.user_uuid)
+  }
 
   $: registerFormValue = {
     name_prefix: null,
@@ -207,6 +209,7 @@
             session_uuid: response.session,
             token: response.token,
             user: response.data.ChannelUser,
+            channel: response.data.Channel,
             cart: response.data.ChannelCart,
             customer: response.data.ChannelCustomer,
             ...$session,
@@ -248,7 +251,7 @@
             token: response.token,
             user: response.data.ChannelUser,
             cart: response.data.ChannelCart,
-            customer: response.data.ChannelCustomer,
+            channel: response.data.Channel,
             ...$session,
           }
 
@@ -300,12 +303,19 @@
   }
 
   async function checkout(details) {
+    // Disable Btns
     inProgress = true
     return put(`auth/session/cart/checkout`, details, {}, $session.token, $session.session_uuid)
       .then(response => {
+
+        // re-enable Btns
         inProgress = false
+
         console.log('brk response!', response)
 
+        const sessionValues = {
+          ...$session
+        }
 
         if (response.session) {
           sessionValues.session_uuid = response.session
@@ -316,12 +326,21 @@
         if (response.cart) {
           sessionValues.cart = response.cart
         }
+
         // Update the session store
         session.set(sessionValues)
 
-        return goto(`/cart/checkout/confirmation?order_uuid=${response.data.ChannelOrder.order_uuid}`)
+        if (response.data.ChannelOrder) {
+          return goto(`/cart/checkout/confirmation?order_uuid=${response.data.ChannelOrder.order_uuid}`)
+        }
+        else {
+          errors = [
+            'Checkout did not return an order!'
+          ]
+        }
       })
       .catch(err => {
+        // re-enable Btns
         inProgress = false
         errors = err
         return

@@ -32,6 +32,9 @@ export function get(req, res) {
     })
     .catch(err => {
       console.log('auth/session/order/items', err)
-      res.status('401').end(JSON.stringify(err))
+      const error = err.error ? { error: err.error } : err
+      res.setHeader('Content-Type', 'application/json')
+      res.statusCode = err.statusCode ? err.statusCode : 500
+      res.end(JSON.stringify(error))
     })
 }

@@ -8,7 +8,7 @@
 <script>
   import { put } from 'api.js'
   import { goto } from '@sapper/app'
-  import ListErrors from '../../../_components/ListErrors.svelte'
+  import { ListErrors } from '../../../_components/ListErrors'
 
   export let token
 

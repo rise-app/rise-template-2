@@ -1,6 +1,6 @@
 <script>
   import { post, get, put } from 'api.js'
-  import ListErrors from '../_components/ListErrors.svelte'
+  import { ListErrors } from '../_components/ListErrors'
 
   let email
   let inProgress = false
