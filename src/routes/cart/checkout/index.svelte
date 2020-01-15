@@ -25,11 +25,27 @@
   import { ListErrors } from '../../_components/ListErrors'
   import { CreditCard } from '../../_components/CreditCard'
   import LoginForm from '../../_components/forms/LoginForm.svelte'
+  import Dialog, { Title, Content, Actions } from '@smui/dialog'
+
+  import Modal from '../../_components/material/modal/Modal'
 
   // LOGIC
   const {preloading, session, page} = stores()
 
   let errors
+
+  /************************
+   * DIALOGS
+   ************************/
+  let dialogPayment
+
+  /*******************************
+   * DIALOG HANDLERS
+   *******************************/
+  function closeHandler(event) {
+    console.log('closed', event)
+  }
+
 
   let cart = {}, items = []
   $: cart = $session.cart || {}
@@ -83,6 +99,10 @@
         ? $session.customer.address_shipping
         : {}
 
+
+  /************************
+   * REQUESTS
+   ************************/
 
   async function listCountries() {
     countriesLoading = true
@@ -351,6 +371,11 @@
       })
   }
 
+
+  /************************
+   * UTILITIES
+   ************************/
+
   // Load the countries on mounting of the component
   onMount(async () => {
     await listCountries()
@@ -464,7 +489,8 @@
           </div>
           <div class="list-group-item">
             <h5 class="text-muted">Payment Information</h5>
-            <CreditCard />
+
+            <a on:click={e=> dialogPayment.open()}>OPEN</a>
           </div>
         </div>
       </StepPanel>
@@ -509,3 +535,14 @@
     </Steps>
   </div>
 </div>
+
+
+
+<Modal
+  bind:this={dialogPayment}
+  aria-labelledby="dialog-contact-title"
+  aria-describedby="dialog-contact-content"
+  on:MDCDialog:closed={closeHandler}
+>
+  <CreditCard />
+</Modal>
