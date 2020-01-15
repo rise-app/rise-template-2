@@ -11,13 +11,24 @@
     // Fixes deep nested objects
     let primary_navigation_campaigns_query = riseQuery(pluckQuery(query, 'pnq'))
 
+    let campaign_attributes = [
+      'collection_uuid',
+      'title',
+      'description',
+      'handle',
+      'image_primary'
+    ]
+
     const primaryNavReq = async() => rise.channelPublicCampaign.listDescendantsByHandle({}, {
       session: session_uuid,
       token: token,
       params: {
         handle: riseConfig.primary_navigation_handle
       },
-      query: riseQuery(primary_navigation_campaigns_query)
+      query: riseQuery({
+        ...primary_navigation_campaigns_query,
+        attributes: campaign_attributes
+      })
     })
 
     // return rise.channelPublic.get()
@@ -69,6 +80,13 @@
 
   let path = ''
   $: path = $page.path
+
+  $: if ($session.user) {
+    console.log('BRK HELLO USER', $session.user)
+  }
+  else {
+    console.log('BRK HELLO USER 2', $session.user)
+  }
 
   let progress = 50
   preloading.subscribe(value => {
@@ -218,7 +236,7 @@
       <dd/>
     </div>
 
-    <slot/>
+    <slot></slot>
   </main>
   <Footer
     {segment}

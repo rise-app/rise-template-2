@@ -1,68 +1,48 @@
 <script context="module">
   import { rise } from 'sdk'
   import { riseQuery, pluckQuery } from 'query'
-  import { rise as riseConfig } from 'config'
+  import { rise as riseConfig, brand } from 'config'
+  import { get, put, post } from 'utils'
 
   // the (optional) preload function takes a
   // `{ path, params, query }` object and turns it into
   // the data we need to render the page
   export async function preload({path, params, query}, {token, session_uuid, channel}) {
-    // const {handle} = params
-    //
-    // // Fixes deep nested objects
-    // let variants_query = riseQuery(pluckQuery(query, 'vq'))
-    //
-    // const offerReq = async (_handle) => {
-    //   if (_handle) {
-    //     return rise.channelPublicOffer.getByHandle({}, {
-    //       session: session_uuid,
-    //       token: token,
-    //       params: {
-    //         handle: _handle
-    //       }
-    //     })
-    //   } else {
-    //     return Promise.resolve()
-    //   }
-    // }
-    //
-    // const variantsReq = async (_handle) => {
-    //   if (_handle) {
-    //     return rise.channelPublicOfferVariant.listVariantsByHandle({}, {
-    //       session: session_uuid,
-    //       token: token,
-    //       params: {
-    //         handle: _handle
-    //       },
-    //       query: riseQuery(variants_query)
-    //     })
-    //   } else {
-    //     Promise.resolve()
-    //   }
-    // }
-    //
-    //
-    // return Promise.all([
-    //   offerReq(handle),
-    //   variantsReq(handle)
-    // ])
-    //         .then(([
-    //                  offer = {},
-    //                  variants = {}
-    //                ]) => {
-    //           return {
-    //             offer: offer.data,
-    //
-    //             variants_query,
-    //             variants: variants.data,
-    //             variants_total: variants.total,
-    //             variants_offset: variants.offset,
-    //             variants_limit: variants.limit,
-    //           }
-    //         })
-    //         .catch(err => {
-    //           return this.error(err)
-    //         })
+
+    // Query for Cart Items
+    let items_query = riseQuery(pluckQuery(query, 'vq'))
+
+    const getCartReq = async () => {
+      return get(`auth/session/cart`, {}, token, session_uuid)
+    }
+
+    const itemsReq = async (_handle) => {
+      return get(`auth/session/cart/items`, {}, token, session_uuid)
+    }
+
+    return Promise.all([
+      getCartReq(),
+      Promise.resolve() // itemsReq(handle)
+    ])
+      .then(([
+         cart = {},
+         items = {}
+       ]) => {
+        return {
+          session_uuid: cart.session,
+
+          cart: cart.data,
+
+          items_query,
+          // items: items.data,
+          // items_total: items.total,
+          // items_offset: items.offset,
+          // items_limit: items.limit,
+        }
+      })
+      .catch(err => {
+        return this.error(err)
+      })
   }
 
 </script>
@@ -70,23 +50,32 @@
 <script>
   // MODULES
   import { goto, stores } from '@sapper/app'
-  import { get, put, post } from 'utils'
   import { onMount } from 'svelte'
 
   // COMPONENTS
-  import ImageLoader from '../_components/ImageLoader'
   import Currency from '../_components/Currency'
   import CartItem from './_components/CartItem.svelte'
 
+  // IMPORTS
+  export let session_uuid, cart = {}, items = []
+
   // INCLUDES
-  const {preloading, page, session} = stores()
+  const { preloading, page, session } = stores()
 
   // LOGIC
 
   async function getCartReq() {
     return get(`auth/session/cart`, {}, $session.token, $session.session_uuid)
       .then(response => {
-        $session.cart = response.data
+        const sessionValues = {
+          ...$session
+        }
+        if (response.data) {
+          sessionValues.cart = response.data
+        }
+
+        session.set(sessionValues)
+
         return response
       })
   }
@@ -94,32 +83,59 @@
   async function getCartItemsReq() {
     return get(`auth/session/cart/items`, {}, $session.token, $session.session_uuid)
       .then(response => {
-        $session.cart.items = response.data
+
+        console.log('brk response 2!', response)
+
+        const sessionValues = {
+          ...$session
+        }
+        if (response.cart) {
+          sessionValues.cart = response.cart
+        }
+
+        if (response.data) {
+          sessionValues.cart.items = response.data
+        }
+
+        session.set(sessionValues)
+
         return response
       })
   }
 
-  let cart = {}, items = []
-  $: cart = $session.cart || {}
-  $: items = $session.cart && $session.cart.items ? $session.cart.items : []
+  function updateStore() {
+    console.log('BRK updating store', cart, items)
 
-  onMount(async () => {
-    // return getCartReq()
-    //   .then(response => {
-    //     console.log('brk response 1!', response)
-    //     return getCartItemsReq()
-    //   })
-    //   .then(response => {
-    //     console.log('brk response 2!', response)
-    //   })
-  })
+    const sessionValues = {
+      ...$session
+    }
+    if (session_uuid) {
+      sessionValues.session_uuid = session_uuid
+    }
+
+    if (cart) {
+      sessionValues.cart = cart
+    }
+
+    // if (items) {
+    //   sessionValues.cart.items = items
+    // }
+
+    session.set(sessionValues)
+  }
+
+  $: updateStore()
+
+  let btnsDisabled
+  $: btnsDisabled = !cart.total_items
 
 </script>
 <style type="text/scss">
   @import "../../theme/variables";
-/*********************************
-4. Cart
-*********************************/
+
+  /*********************************
+  4. Cart
+  *********************************/
 
   .cart_section
   {
@@ -138,7 +154,7 @@
   }
   .cart_list
   {
-    border: solid 1px #e8e8e8;
+    border: solid 1px $gray-100;
     box-shadow: 0px 1px 5px rgba(0,0,0,0.1);
   }
   .cart_item
@@ -204,7 +220,7 @@
     width: 100%;
     height: 60px;
     margin-top: 30px;
-    border: solid 1px #e8e8e8;
+    border: solid 1px $gray-100;
     box-shadow: 0px 1px 5px rgba(0,0,0,0.1);
     padding-right: 46px;
     padding-left: 15px;
@@ -237,8 +253,8 @@
     font-weight: 400;
     line-height: 48px;
     color: rgba(0,0,0,0.5);
-    background: #FFFFFF;
-    border: solid 1px #b2b2b2;
+    background: $white;
+    border: solid 1px $gray-300;
     padding-left: 35px;
     padding-right: 35px;
     outline: none;
@@ -247,8 +263,8 @@
   }
   .cart_button_clear:hover
   {
-    border-color: #0e8ce4;
-    color: #0e8ce4;
+    border-color: theme-color('primary');
+    color: theme-color('primary');
   }
   .cart_button_checkout
   {
@@ -257,7 +273,7 @@
     font-size: 18px;
     font-weight: 400;
     line-height: 48px;
-    color: #FFFFFF;
+    color: $white;
     padding-left: 35px;
     padding-right: 35px;
     outline: none;
@@ -267,7 +283,7 @@
 </style>
 
 <svelte:head>
-  <title>Cart</title>
+  <title>Cart • { brand.name }</title>
 </svelte:head>
 
 <!-- Cart -->
@@ -280,8 +296,8 @@
           <div class="cart_title">Shopping Cart</div>
           <div class="cart_items">
             <div class="list-group cart_list">
-              {#each items as item, i (item.item_uuid)}
-              <CartItem {item} />
+              {#each cart.items as item, i (item.item_uuid)}
+                <CartItem {item} />
               {:else}
                 <div class="list-group-item">
                   <div class="text-center mt-5">
@@ -335,10 +351,11 @@
 <!--            <button-->
 <!--              type="button"-->
 <!--              class="button cart_button_clear"-->
-<!--            >Add to Cart</button>-->
+<!--            >Make Wishlist</button>-->
             <a
               href="/cart/checkout"
               class="btn btn-primary cart_button_checkout"
+              class:disabled={btnsDisabled}
             >
               Checkout
             </a>

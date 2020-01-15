@@ -19,6 +19,7 @@
     customer = {},
     primary_navigation_campaigns = [],
     preloading = false,
+    inProgress = false,
     path = ''
 
 
@@ -31,8 +32,14 @@
   const debouncedSearch = debounce(search, 450)
 
 
-  let isLoggedIn = false, term, inProgress
-  $: isLoggedIn = !!(user && user.username)
+  let isLoggedIn = false, term
+  // WEIRD SVELTE!
+  $: if (user && user.user_uuid) {
+    isLoggedIn = !!(user && user.user_uuid)
+  }
+  else {
+    isLoggedIn = !!(user && user.user_uuid)
+  }
 
 
   let selectWidth = '55px';

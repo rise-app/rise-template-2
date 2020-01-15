@@ -2,7 +2,7 @@
   // MODULES
   import { createEventDispatcher } from 'svelte'
   import { form, bindClass } from 'svelte-forms'
-  import ListErrors from '../../../_components/ListErrors.svelte'
+  import { ListErrors } from '../../../_components/ListErrors'
 
   // IMPORTS
   export let offer = {}, errors, value = {}, inProgress = false, preloading = false
@@ -45,6 +45,14 @@
     value.quantity = qty - 1
   }
 
+  function wishlist() {
+    dispatch('addItemWishlist', value)
+  }
+
+  function share() {
+    dispatch('shareItem', value)
+  }
+
 </script>
 
 <style type="text/scss">
@@ -54,8 +62,8 @@
 
 <form on:submit|preventDefault={submit}>
   <ListErrors {errors} />
-  <fieldset class="form-group form-label-group">
-    <div class="input-group mb-3">
+  <fieldset class="form-group">
+    <div class="input-group">
       <div class="input-group-prepend">
         <a on:click={e => decreaseQty(value.quantity)} class="input-group-text">
           <i class="fa fa-minus" />
@@ -66,7 +74,7 @@
         placeholder="Quantity"
         value="1"
         step="1"
-        class="form-control"
+        class="form-control quantity"
         aria-label="Quantity for { offer.title }"
         required
         autofocus
@@ -85,7 +93,7 @@
   </fieldset>
 
   {#if inProgress === true}
-    <div class="progress mb-2">
+    <div class="progress mt-3 mb-3">
       <div
         class="progress-bar progress-bar-striped progress-bar-animated"
         role="progressbar"
@@ -97,11 +105,33 @@
     </div>
   {/if}
 
-  <button
-    class="btn btn-primary"
-    type="submit"
-    disabled={disableBtn}
-  >
-    Add to Cart
-  </button>
+  <div class="d-flex flex-row mb-3">
+    <div class="text-center flex-column flex-fill mr-1">
+      <button
+        class="btn btn-primary btn-block"
+        type="submit"
+        disabled={disableBtn}
+      >
+        Add to Cart
+      </button>
+    </div>
+    <div class="text-center flex-column flex-shrink-0 mr-1">
+      <button
+        class="btn btn-secondary"
+        on:click={wishlist}
+        disabled={disableBtn}
+      >
+        <i class="fa fa-heart"></i>
+      </button>
+    </div>
+    <div class="text-center flex-column flex-shrink-0 mr-1" >
+      <button
+        class="btn btn-secondary text-center flex-column flex-shrink-0"
+        on:click={share}
+        disabled={disableBtn}
+      >
+        <i class="fa fa-share"></i>
+      </button>
+    </div>
+  </div>
 </form>

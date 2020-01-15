@@ -77,6 +77,7 @@
   import Currency from '../../_components/Currency.svelte'
   import OfferForm from './_components/OfferForm.svelte'
   import Gallery from './_components/Gallery.svelte'
+  import Header from './_components/Header.svelte'
 
 
   // IMPORTS
@@ -90,7 +91,7 @@
 
 
   // LOGIC
-  const { preloading, session, page } = stores()
+  const {preloading, session, page} = stores()
 
   let errors, inProgress = false
 
@@ -100,34 +101,49 @@
     quantity: 1
   }
 
-  $: inCart = $session.cart && $session.cart.items && $session.cart.items.find(i => i.offer_uuid === offer.offer_uuid)
+  let title = offer && offer.title ? offer.title : 'Shop'
+  let description = offer ? offer.description_seo || offer.description : 'Offer'
+  let tags = offer ? offer.tags : 'offer'
+
+  let inCart
+  $: inCart = $session.cart
+          && $session.cart.items
+          && $session.cart.items.find(i => i.offer_uuid === offer.offer_uuid)
 
   async function addItemToCart(item) {
-    //
+    // Disable Buttons
     inProgress = true
 
     return post(`auth/session/cart/items`, item, {}, $session.token, $session.session_uuid)
       .then(response => {
         console.log('brk response!', response)
 
+        // Re-enable Buttons
         inProgress = false
 
         if (response.errors || response.error) {
           errors = response.errors ? response.errors : [response.error]
         }
 
+        // Create a placeholder for the current session values
+        const sessionValues = {
+          ...$session
+        }
+
         // If the request returned a session_uuid, update the local session.session_uuid
         if (response.session_uuid || response.session) {
-          $session.session_uuid = response.session_uuid || response.session
+          sessionValues.session_uuid = response.session_uuid || response.session
         }
         // If the request returned a token, update the local session.token
         if (response.token) {
-          $session.token = response.token
+          sessionValues.token = response.token
         }
         // If the request returned the full cart, update the local session.cart
         if (response.cart) {
-          $session.cart = response.cart
+          sessionValues.cart = response.cart
         }
+        // Update the Session Store
+        session.set(sessionValues)
 
         // If this returned the new cart item(s), then redirect to the cart view
         if (response.data) {
@@ -138,6 +154,7 @@
         }
       })
       .catch(err => {
+        // Re-enable Buttons
         inProgress = false
         errors = err
         return err
@@ -161,10 +178,13 @@
 </style>
 
 <svelte:head>
-  <title>{ offer.title }</title>
+  <title>{ title }</title>
+  <meta name="description" content="{ description }">
+  <meta name="keywords" content="{ tags }">
 </svelte:head>
 
 <!-- Single Offer -->
+<Header { offer } />
 <div class="offer">
   <div class="container">
     <div class="row">
@@ -179,12 +199,11 @@
           </small>
         </div>
         <div class="product_name mb-2">
-          <h1>
-            { offer.title || 'Untitled' }
-          </h1>
         </div>
         <div class="product_price mb-2">
-          <Currency price={ offer.price_channel } currency={ offer.currency }/>
+          <h2>
+            <Currency price={ offer.price_channel } currency={ offer.currency }/>
+          </h2>
         </div>
 
         <div class="product_description mb-2">
@@ -217,9 +236,8 @@
         </div>
       </div>
     </div>
-    <div class="row">
+    <div class="row mt-5">
       <div class="col-sm-12">
-
         <Tabs>
           <TabList>
             <Tab>Description</Tab>

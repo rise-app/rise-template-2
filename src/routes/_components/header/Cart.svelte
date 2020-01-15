@@ -1,5 +1,8 @@
 <script>
   export let cart = {}
+
+  let totalItems
+  $: totalItems = cart ? cart.total_items : 0
 </script>
 <style type="text/scss">
   @import "../../../theme/variables";
@@ -37,8 +40,8 @@
   }
 </style>
 <div class="cart">
-{#if cart.total_items > 0 }
-<span class="total_items">{cart.total_items}</span>
+{#if totalItems > 0 }
+<span class="total_items">{ totalItems }</span>
 {/if}
 <i class="fa fa-shopping-cart" />
 </div>

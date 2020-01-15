@@ -46,9 +46,20 @@
 <header class="header">
   <LevelOne />
   <LevelTwo
-    {segment} {brand} {primary_navigation_campaigns} {customer} {user} {cart} {wishlist} {preloading} {path}
+    {segment}
+    {brand}
+    {primary_navigation_campaigns}
+    {customer}
+    {user}
+    {cart}
+    {wishlist}
+    {preloading}
+    {path}
     on:search={e=> search(e.detail)}
     on:goToCampaign={e=> goToCampaign(e.detail)}
   />
-  <LevelThree {segment} {primary_navigation_campaigns} />
+  <LevelThree
+    {segment}
+    {primary_navigation_campaigns}
+  />
 </header>

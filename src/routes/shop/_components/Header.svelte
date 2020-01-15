@@ -5,13 +5,13 @@
 
   // IMPORTS
   export let
-          offers_query = {},
-          offers_total = 0,
-          offers_offset = 0,
-          offers_limit = 10,
+    offers_query = {},
+    offers_total = 0,
+    offers_offset = 0,
+    offers_limit = 10,
 
-          campaign = {},
-          ancestors = []
+    campaign = {},
+    ancestors = []
 
   $: title = campaign && campaign.title ? campaign.title : 'Shop'
 

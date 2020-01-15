@@ -73,6 +73,7 @@
   import { onMount } from 'svelte'
   import Currency from '../../../_components/Currency.svelte'
   import { Order } from '../../../_components/Order'
+  import { titlecase } from 'pipes'
 
   // COMPONENTS
 
@@ -94,6 +95,21 @@
     font-size: 30px;
     font-weight: 500;
   }
+  .status--open {
+    background: $green;
+  }
+  .status--paid {
+    background: $green;
+  }
+  .status--fulfilled {
+    background: $green;
+  }
+  .status--closed {
+    background: $red;
+  }
+  .status--pending {
+
+  }
 </style>
 
 <svelte:head>
@@ -105,7 +121,20 @@
     <div class="row">
       <div class="col-12">
         <div class="order_container">
-          <div class="order_title">#{order.name}</div>
+          <div class="order_title">
+            #{order.name}
+          </div>
+          <div class="order_status">
+            <span class="badge badge-secondary status--{order.status}">
+              <i class="fa fa-eye" ></i> { titlecase(order.status) }
+            </span>
+            <span class="badge badge-secondary status--{order.status_financial}">
+              <i class="fa fa-dollar-sign" ></i> { titlecase(order.status_financial) }
+            </span>
+            <span class="badge badge-secondary status--{order.status_fulfillment}">
+              <i class="fa fa-truck" ></i> { titlecase(order.status_fulfillment) }
+            </span>
+          </div>
           <Order {order} {items} />
         </div>
       </div>

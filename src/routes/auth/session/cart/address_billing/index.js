@@ -14,7 +14,9 @@ export function get(req, res) {
     }
   })
     .then(response => {
-      req.session.cart.address_billing = response.data
+      if (response.data) {
+        req.session.cart.address_billing = response.data
+      }
 
       return utils.saveSession(req)
         .then(() => {
@@ -24,8 +26,11 @@ export function get(req, res) {
         })
     })
     .catch(err => {
-      console.log('auth/session/cart', err)
-      res.status('401').end(JSON.stringify(err))
+      console.log('auth/session/cart/address_billing', err)
+      const error = err.error ? { error: err.error } : err
+      res.setHeader('Content-Type', 'application/json')
+      res.statusCode = err.statusCode ? err.statusCode : 500
+      res.end(JSON.stringify(error))
     })
 }
 
@@ -43,7 +48,9 @@ export function put(req, res) {
     }
   })
     .then(response => {
-      req.session.cart.address_billing = response.data
+      if (response.data) {
+        req.session.cart.address_billing = response.data
+      }
 
       return utils.saveSession(req)
         .then(() => {
@@ -54,7 +61,10 @@ export function put(req, res) {
 
     })
     .catch(err => {
-      console.log('auth/session/cart', err)
-      res.status('401').end(JSON.stringify(err))
+      console.log('auth/session/cart/address_billing', err)
+      const error = err.error ? { error: err.error } : err
+      res.setHeader('Content-Type', 'application/json')
+      res.statusCode = err.statusCode ? err.statusCode : 500
+      res.end(JSON.stringify(error))
     })
 }

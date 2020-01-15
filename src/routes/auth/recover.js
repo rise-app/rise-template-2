@@ -14,10 +14,13 @@ export function post(req, res) {
       console.log('BRK response', response)
 
       res.setHeader('Content-Type', 'application/json')
-
       res.end(JSON.stringify(response))
     })
     .catch(err => {
-      res.status('401').end(JSON.stringify(err))
+      console.log('auth/recover', err)
+      const error = err.error ? { error: err.error } : err
+      res.setHeader('Content-Type', 'application/json')
+      res.statusCode = err.statusCode ? err.statusCode : 500
+      res.end(JSON.stringify(error))
     })
 }

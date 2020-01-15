@@ -8,7 +8,7 @@
   // the data we need to render the page
   export async function preload({path, params, query}, {token, session_uuid, channel}) {
 
-    const order_uuid = query.order_uuid
+    const { order_uuid } = query
 
     // Fixes deep nested objects
     let items_query = riseQuery(pluckQuery(query, 'iq'))
@@ -22,7 +22,8 @@
             order_uuid: _order_uuid
           }
         })
-      } else {
+      }
+      else {
         return Promise.resolve()
       }
     }
@@ -35,10 +36,11 @@
           params: {
             order_uuid: _order_uuid
           },
-          query: riseQuery(items_query)
+          query: items_query
         })
-      } else {
-        Promise.resolve()
+      }
+      else {
+        return Promise.resolve()
       }
     }
 
@@ -62,7 +64,7 @@
         }
       })
       .catch(err => {
-        return this.error(err)
+        return this.error(err.statusCode || 404, err)
       })
   }
 
@@ -71,8 +73,8 @@
 <script>
   // MODULES
   import { onMount } from 'svelte'
-  import Currency from '../../../_components/Currency.svelte'
   import { Order } from '../../../_components/Order'
+  import { titlecase } from 'pipes'
 
   // COMPONENTS
 
@@ -120,6 +122,22 @@
     font-size: 30px;
     font-weight: 500;
   }
+
+  .status--open {
+    background: $green;
+  }
+  .status--paid {
+    background: $green;
+  }
+  .status--fulfilled {
+    background: $green;
+  }
+  .status--closed {
+    background: $red;
+  }
+  .status--pending {
+
+  }
 </style>
 
 <svelte:head>
@@ -131,7 +149,20 @@
     <div class="row">
       <div class="col-lg-10 offset-lg-1">
         <div class="order_container">
-          <div class="order_title">#{order.name} Order Confirmation</div>
+          <div class="order_title">
+            #{order.name} Order Confirmation
+          </div>
+          <div class="order_status">
+            <span class="badge badge-secondary status--{order.status}">
+              <i class="fa fa-eye" ></i> { titlecase(order.status) }
+            </span>
+            <span class="badge badge-secondary status--{order.status_financial}">
+              <i class="fa fa-dollar-sign" ></i> { titlecase(order.status_financial) }
+            </span>
+            <span class="badge badge-secondary status--{order.status_fulfillment}">
+              <i class="fa fa-truck" ></i> { titlecase(order.status_fulfillment) }
+            </span>
+          </div>
           <Order {order} {items} />
         </div>
       </div>

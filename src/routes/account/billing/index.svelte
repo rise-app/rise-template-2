@@ -59,7 +59,7 @@
 
   // COMPONENTS
   import AddressForm from '../../_components/forms/AddressForm.svelte'
-  import ListErrors from '../../_components/ListErrors.svelte'
+  import { ListErrors } from '../../_components/ListErrors'
 
   // IMPORTS
   export let

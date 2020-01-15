@@ -60,9 +60,14 @@
     -o-transform: translateY(4px);
     transform: translateY(4px);
   }
+
+  .order_item_quantity
+  {
+    text-align: center;
+  }
   .order_item_price
   {
-    text-align: right;
+    text-align: left;
   }
   .order_item_total
   {
@@ -96,12 +101,6 @@
       <!--        <span style="background-color:#999999;"></span>Silver-->
       <!--      </div>-->
     </div>
-    <div class="order_item_quantity order_info_col">
-      <div class="order_item_title">Quantity</div>
-      <div class="order_item_text">
-        { item.quantity || 0 }
-      </div>
-    </div>
     <div class="order_item_price order_info_col">
       <div class="order_item_title">Price</div>
       <div class="order_item_text">
@@ -109,6 +108,12 @@
           price={item.price_per_unit}
           currency={item.currency}
         />
+      </div>
+    </div>
+    <div class="order_item_quantity order_info_col">
+      <div class="order_item_title">Quantity</div>
+      <div class="order_item_text">
+        { item.quantity || 0 }
       </div>
     </div>
     <div class="order_item_total order_info_col">

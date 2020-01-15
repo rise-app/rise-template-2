@@ -7,6 +7,7 @@ export function put(req, res) {
     ? req.session.channel.channel_uuid
     : config.rise.default_channel
 
+  // Checkout the Current Session Cart
   rise.channelAuth.checkoutSessionCart(cart, {
     session: req.session.session_uuid,
     token: req.session.token,
@@ -16,6 +17,7 @@ export function put(req, res) {
   })
     .then(response => {
 
+      // Get the new Session Cart
       return rise.channelAuth.sessionCart(cart, {
         session: req.session.session_uuid,
         token: req.session.token,
@@ -24,18 +26,33 @@ export function put(req, res) {
         }
       })
         .then(_response => {
-          req.session.cart = _response.data
+
+          if (_response.session) {
+            req.session.session_uuid = _response.session
+          }
+          if (_response.token) {
+            req.session.token = _response.token
+          }
+          if (_response.data) {
+            req.session.cart = _response.data
+          }
 
           return utils.saveSession(req)
             .then(() => {
               // req.session.save( function(err) {
               res.setHeader('Content-Type', 'application/json')
-              return res.end(JSON.stringify({...response, cart: req.session.cart}))
+              return res.end(JSON.stringify({
+                ...response,
+                cart: req.session.cart
+              }))
             })
         })
     })
     .catch(err => {
       console.log('auth/session/cart/checkout', err)
-      res.status('401').end(JSON.stringify(err))
+      const error = err.error ? { error: err.error } : err
+      res.setHeader('Content-Type', 'application/json')
+      res.statusCode = err.statusCode ? err.statusCode : 500
+      res.end(JSON.stringify(error))
     })
 }

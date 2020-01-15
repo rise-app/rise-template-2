@@ -1,6 +1,6 @@
 <script>
   // MODULES
-
+  import { createEventDispatcher } from 'svelte'
 
   // IMPORTS
   export let
@@ -8,6 +8,13 @@
     offers_total = 0,
     offers_offset = 0,
     offers_limit = 10
+
+  // LOGIC
+  const dispatch = createEventDispatcher()
+
+  function sort(type) {
+    dispatch('sort', type)
+  }
 
 </script>
 <style type="text/scss">
@@ -43,11 +50,14 @@
     display: inline-block;
     position: relative;
     margin-left: 6px;
+
   }
 
   .shop_sorting ul li {
     color: rgba(0, 0, 0, 0.5);
     cursor: pointer;
+    list-style: none;
+    text-transform: capitalize;
   }
 
   .shop_sorting ul li:hover {
@@ -70,12 +80,15 @@
   .shop_sorting ul li ul {
     display: block;
     position: absolute;
+    z-index: 100;
     top: calc(100% + 15px);
     right: 0;
     text-align: right;
     background: #FFFFFF;
     width: auto;
     padding-top: 15px;
+    padding-left: 0px;
+    padding-right: 0px;
     visibility: hidden;
     opacity: 0;
     box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.1);
@@ -114,15 +127,19 @@
   <div class="shop_product_count"><span>{offers_total}</span> products found</div>
   <div class="shop_sorting">
     <span>Sort by:</span>
-    <ul>
+    <ul class="shop_sorting--list">
       <li>
         <span class="sorting_text">highest rated<i class="fas fa-chevron-down"></i></span>
         <ul>
-          <li class="shop_sorting_button" data-isotope-option='{{ "sortBy": "original-order" }}'>highest
-            rated
+          <li class="shop_sorting_button" on:click={e=> sort(['rating', 'DESC'])}>
+            highest rated
           </li>
-          <li class="shop_sorting_button" data-isotope-option='{{ "sortBy": "name" }}'>name</li>
-          <li class="shop_sorting_button" data-isotope-option='{{ "sortBy": "price" }}'>price</li>
+          <li class="shop_sorting_button" on:click={e=> sort(['name', 'ASC'])}>
+            name
+          </li>
+          <li class="shop_sorting_button" on:click={e=> sort(['price_channel', 'DESC'])}>
+            price
+          </li>
         </ul>
       </li>
     </ul>

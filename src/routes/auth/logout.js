@@ -12,9 +12,10 @@ export function post(req, res) {
   })
     .then((result) => {
       res.setHeader('Content-Type', 'application/json')
-
+      // Auth
       delete req.session.token
 
+      // Utilities
       delete req.session.channel
       delete req.session.user
       delete req.session.cart
@@ -25,14 +26,19 @@ export function post(req, res) {
     })
     .catch(err => {
       console.log('auth/logout', err)
+      const error = err.error ? { error: err.error } : err
 
+      // Auth
       delete req.session.token
 
+      // Utilities
       delete req.session.channel
       delete req.session.user
       delete req.session.cart
       delete req.session.customer
 
-      res.status('401').end(JSON.stringify(err))
+      res.setHeader('Content-Type', 'application/json')
+      res.statusCode = err.statusCode ? err.statusCode : 500
+      res.end(JSON.stringify(error))
     })
 }

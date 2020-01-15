@@ -17,13 +17,36 @@
     let trending_sellers_query = riseQuery(pluckQuery(query, 'tsq'))
     let brands_query = riseQuery(pluckQuery(query, 'bq'))
 
+    let offer_attributes = [
+      'offer_uuid',
+      'title',
+      'description',
+      'handle',
+      'price_channel',
+      'total_price_calculated',
+      'image_primary',
+      'tags',
+      'options'
+    ]
+
+    let campaign_attributes = [
+      'collection_uuid',
+      'title',
+      'description',
+      'handle',
+      'image_primary'
+    ]
+
     const featuredReq = async() => rise.channelPublicCampaign.listOffersByHandle({}, {
       session: session_uuid,
       token: token,
       params: {
         handle: riseConfig.featured_handle
       },
-      query: riseQuery(featured_query)
+      query: riseQuery({
+        ...featured_query,
+        attributes: offer_attributes
+      })
     })
 
     const onSaleReq = async() => rise.channelPublicCampaign.listOffersByHandle({}, {
@@ -32,7 +55,10 @@
       params: {
         handle: riseConfig.on_sale_handle
       },
-      query: riseQuery(on_sale_query)
+      query: riseQuery({
+        ...on_sale_query,
+        attributes: offer_attributes
+      })
     })
 
     const bestRatedReq = async() => rise.channelPublicCampaign.listOffersByHandle({}, {
@@ -41,7 +67,10 @@
       params: {
         handle: riseConfig.best_rated_handle
       },
-      query: riseQuery(best_rated_query)
+      query: riseQuery({
+        ...best_rated_query,
+        attributes: offer_attributes
+      })
     })
 
     const dealsOfTheWeekReq = async() => rise.channelPublicCampaign.listOffersByHandle({}, {
@@ -50,7 +79,10 @@
       params: {
         handle: riseConfig.deals_of_the_week_handle
       },
-      query: riseQuery(deals_of_the_week_query)
+      query: riseQuery({
+        ...deals_of_the_week_query,
+        attributes: offer_attributes
+      })
     })
 
     const popularCategoriesReq = async() => rise.channelPublicCampaign.listChildrenByHandle({}, {
@@ -59,7 +91,10 @@
       params: {
         handle: riseConfig.popular_categories_handle
       },
-      query: riseQuery(popular_categories_query)
+      query: riseQuery({
+        ...popular_categories_query,
+        attributes: campaign_attributes
+      })
     })
 
     const hotNewArrivalsReq = async() => rise.channelPublicCampaign.listOffersByHandle({}, {
@@ -68,7 +103,10 @@
       params: {
         handle: riseConfig.hot_new_arrivals_handle
       },
-      query: riseQuery(hot_new_arrivals_query)
+      query: riseQuery({
+        ...hot_new_arrivals_query,
+        attributes: offer_attributes
+      })
     })
 
     const hotNewArrivalsFeaturedReq = async() => rise.channelPublicCampaign.listOffersByHandle({}, {
@@ -77,7 +115,10 @@
       params: {
         handle: riseConfig.hot_new_arrivals_featured_handle
       },
-      query: riseQuery(hot_new_arrivals_featured_query)
+      query: riseQuery({
+        ...hot_new_arrivals_featured_query,
+        attributes: offer_attributes
+      })
     })
 
     const hotBestSellersReq = async() => rise.channelPublicCampaign.listOffersByHandle({}, {
@@ -86,7 +127,10 @@
       params: {
         handle: riseConfig.hot_best_sellers_handle
       },
-      query: riseQuery(hot_best_sellers_query)
+      query: riseQuery({
+        ...hot_best_sellers_query,
+        attributes: offer_attributes
+      })
     })
 
     const hotBestSellersFeaturedReq = async() => rise.channelPublicCampaign.listOffersByHandle({}, {
@@ -95,7 +139,10 @@
       params: {
         handle: riseConfig.hot_best_sellers_featured_handle
       },
-      query: riseQuery(hot_best_sellers_featured_query)
+      query: riseQuery({
+        ...hot_best_sellers_featured_query,
+        attributes: offer_attributes
+      })
     })
 
     const trendingSellersReq = async() => rise.channelPublicCampaign.listOffersByHandle({}, {
@@ -104,7 +151,10 @@
       params: {
         handle: riseConfig.trending_sellers_handle
       },
-      query: riseQuery(trending_sellers_query)
+      query: riseQuery({
+        ...trending_sellers_query,
+        attributes: offer_attributes
+      })
     })
 
     const brandsReq = async() => rise.channelPublicCampaign.listChildrenByHandle({}, {
@@ -113,32 +163,35 @@
       params: {
         handle: riseConfig.brands_handle
       },
-      query: riseQuery(brands_query)
+      query: riseQuery({
+        ...brands_query,
+        attributes: campaign_attributes
+      })
     })
 
     return Promise.all([
       featuredReq(),
-      // onSaleReq,
-      // bestRatedReq,
-      dealsOfTheWeekReq(),
-      popularCategoriesReq(),
-      hotNewArrivalsReq(),
-      hotBestSellersReq(),
-      trendingSellersReq(),
+      Promise.resolve(), // onSaleReq(),
+      Promise.resolve(), // bestRatedReq(),
+      Promise.resolve(), // dealsOfTheWeekReq(),
+      Promise.resolve(), // popularCategoriesReq(),
+      Promise.resolve(), // hotNewArrivalsReq(),
+      Promise.resolve(), // hotBestSellersReq(),
+      Promise.resolve(), // trendingSellersReq(),
       brandsReq()
     ])
       .then(([
-        featured_offers,
-        // on_sale_offers,
-        // best_rated_offers,
-        deals_of_the_week_offers,
-        popular_categories_campaigns,
-        hot_new_arrivals_offers,
-        hot_best_sellers_offers,
-        trending_sellers_offers,
-        brands_campaigns
+        featured_offers = {},
+        on_sale_offers = {},
+        best_rated_offers = {},
+        deals_of_the_week_offers = {},
+        popular_categories_campaigns = {},
+        hot_new_arrivals_offers = {},
+        hot_best_sellers_offers = {},
+        trending_sellers_offers = {},
+        brands_campaigns = {}
       ]) => {
-        console.log('brk offers', featured_offers, deals_of_the_week_offers, popular_categories_campaigns, hot_new_arrivals_offers, hot_best_sellers_offers, trending_sellers_offers, brands_campaigns)
+
         return {
           featured_query,
           featured_offers: featured_offers.data,
@@ -147,16 +200,16 @@
           featured_offers_limit: featured_offers.limit,
 
           on_sale_query,
-          // on_sale_offers: on_sale_offers.data,
-          // on_sale_offers_total: on_sale_offers.total,
-          // on_sale_offers_offset: on_sale_offers.offset,
-          // on_sale_offers_limit: on_sale_offers.limit,
-          //
+          on_sale_offers: on_sale_offers.data,
+          on_sale_offers_total: on_sale_offers.total,
+          on_sale_offers_offset: on_sale_offers.offset,
+          on_sale_offers_limit: on_sale_offers.limit,
+
           best_rated_query,
-          // best_rated_offers: best_rated_offers.data,
-          // best_rated_offers_total: best_rated_offers.total,
-          // best_rated_offers_offset: best_rated_offers.offset,
-          // best_rated_offers_limit: best_rated_offers.limit,
+          best_rated_offers: best_rated_offers.data,
+          best_rated_offers_total: best_rated_offers.total,
+          best_rated_offers_offset: best_rated_offers.offset,
+          best_rated_offers_limit: best_rated_offers.limit,
 
           deals_of_the_week_query,
           deals_of_the_week_offers: deals_of_the_week_offers.data,
@@ -302,24 +355,24 @@
 
 <!--<Characteristics></Characteristics>-->
 
-<!--<DealsOfTheWeek-->
-<!--  {deals_of_the_week_query}-->
-<!--  {deals_of_the_week_offers}-->
-<!--  {deals_of_the_week_offers_limit}-->
-<!--  {deals_of_the_week_offers_offset}-->
-<!--  {deals_of_the_week_offers_total}-->
+<DealsOfTheWeek
+  {deals_of_the_week_query}
+  {deals_of_the_week_offers}
+  {deals_of_the_week_offers_limit}
+  {deals_of_the_week_offers_offset}
+  {deals_of_the_week_offers_total}
 
-<!--  {featured_query}-->
-<!--  {featured_offers}-->
-<!--  {featured_offers_limit}-->
-<!--  {featured_offers_offset}-->
-<!--  {featured_offers_total}-->
+  {featured_query}
+  {featured_offers}
+  {featured_offers_limit}
+  {featured_offers_offset}
+  {featured_offers_total}
 
-<!--  {on_sale_query}-->
+  {on_sale_query}
 
-<!--  {best_rated_query}-->
+  {best_rated_query}
 
-<!--&gt;</DealsOfTheWeek>-->
+></DealsOfTheWeek>
 
 <!--<PopularCampaigns-->
 <!--  {popular_categories_query}-->

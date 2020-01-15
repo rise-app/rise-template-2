@@ -22,29 +22,58 @@
   import RegisterForm from '../../_components/forms/RegisterForm.svelte'
   import AddressForm from '../../_components/forms/AddressForm.svelte'
   import Currency from '../../_components/Currency.svelte'
-  import ListErrors from '../../_components/ListErrors.svelte'
+  import { ListErrors } from '../../_components/ListErrors'
   import { CreditCard } from '../../_components/CreditCard'
+  import LoginForm from '../../_components/forms/LoginForm.svelte'
+  import Dialog, { Title, Content, Actions } from '@smui/dialog'
+
+  import Modal from '../../_components/material/modal/Modal'
 
   // LOGIC
   const {preloading, session, page} = stores()
 
-  let cart = {}, items = [], errors
+  let errors
+
+  /************************
+   * DIALOGS
+   ************************/
+  let dialogPayment
+
+  /*******************************
+   * DIALOG HANDLERS
+   *******************************/
+  function closeHandler(event) {
+    console.log('closed', event)
+  }
+
+
+  let cart = {}, items = []
   $: cart = $session.cart || {}
-  $: items = $session.cart && $session.cart.items ? $session.cart.items : []
+  $: items = $session.cart && $session.cart.items
+      ? $session.cart.items
+      : []
 
 
-  let inProgress = false,
-          isLoggedIn = false,
-          countries = [],
-          countriesLoading = false,
-          provinces = [],
-          provincesLoading = false,
-          registerFormValue,
-          billingFormValue,
-          shippingFormValue,
-          shippingMatchesBilling = true
+  let
+    inProgress = false,
+    isLoggedIn = false,
+    countries = [],
+    countriesLoading = false,
+    provinces = [],
+    provincesLoading = false,
+    registerFormValue,
+    billingFormValue,
+    shippingFormValue,
+    shippingMatchesBilling = true
 
-  $: isLoggedIn = !!($session.user && $session.user.username)
+  // WEIRD but works
+  $: if ($session.user) {
+    isLoggedIn = !!($session.user && $session.user.user_uuid)
+  }
+  else {
+    isLoggedIn = !!($session.user && $session.user.user_uuid)
+  }
+
   $: registerFormValue = {
     name_prefix: null,
     name_first: null,
@@ -58,13 +87,22 @@
     password: null,
     password_confirm: null
   }
-  $: billingFormValue = $session.cart && $session.cart.address_billing
-          ? $session.cart.address_billing
-          : {}
-  $: shippingFormValue = $session.cart && $session.cart.address_shipping
-          ? $session.cart.address_shipping
-          : {}
 
+  $: billingFormValue = $session.cart && $session.cart.address_billing
+      ? $session.cart.address_billing
+      : $session.customer && $session.customer.address_billing
+        ? $session.customer.address_billing
+        : {}
+  $: shippingFormValue = $session.cart && $session.cart.address_shipping
+      ? $session.cart.address_shipping
+      : $session.customer && $session.customer.address_shipping
+        ? $session.customer.address_shipping
+        : {}
+
+
+  /************************
+   * REQUESTS
+   ************************/
 
   async function listCountries() {
     countriesLoading = true
@@ -121,10 +159,29 @@
       .then(response => {
         inProgress = false
         console.log('brk response!', response)
+        let sessionValues = {
+          ...$session
+        }
+
+        if (response.session) {
+          sessionValues.session_uuid = response.session
+        }
+        if (response.token) {
+          sessionValues.token = response.token
+        }
+        if (response.cart) {
+          sessionValues.cart = response.cart
+        }
+        // Update the session store
+        session.set(sessionValues)
+
+        return response
+
       })
       .catch(err => {
         inProgress = false
         errors = err
+        return
       })
   }
 
@@ -134,15 +191,109 @@
       .then(response => {
         inProgress = false
         console.log('brk response!', response)
+
+        if (response.session) {
+          sessionValues.session_uuid = response.session
+        }
+        if (response.token) {
+          sessionValues.token = response.token
+        }
+        if (response.cart) {
+          sessionValues.cart = response.cart
+        }
+        // Update the session store
+        session.set(sessionValues)
+
+        return response
       })
       .catch(err => {
+        inProgress = false
+        errors = err
+        return
+      })
+  }
+
+  async function login(user) {
+    inProgress = true
+
+    // Internal Server API
+    return post(`auth/login`, user)
+      .then(response => {
+
+        console.log('BRK login', response)
+
+        if (response.errors || response.error) {
+          errors = response.errors ? response.errors : [response.error]
+        }
+
+        inProgress = false
+
+        if (response.data) {
+          const sessionValues = {
+            session_uuid: response.session,
+            token: response.token,
+            user: response.data.ChannelUser,
+            channel: response.data.Channel,
+            cart: response.data.ChannelCart,
+            customer: response.data.ChannelCustomer,
+            ...$session,
+          }
+          session.set(sessionValues)
+
+          return response
+        }
+        else {
+          return
+        }
+
+      })
+      .catch(err => {
+        console.log('BRK Unexpected Error', err)
         inProgress = false
         errors = err
       })
   }
 
   async function register(user) {
+    inProgress = true
 
+    // Internal Server API
+    return post(`auth/register`, user)
+      .then(response => {
+
+        console.log('BRK register', response)
+
+        if (response.errors || response.error) {
+          errors = response.errors ? response.errors : [response.error]
+        }
+
+        inProgress = false
+
+        if (response.data) {
+          const sessionValues = {
+            session_uuid: response.session,
+            token: response.token,
+            user: response.data.ChannelUser,
+            cart: response.data.ChannelCart,
+            channel: response.data.Channel,
+            ...$session,
+          }
+
+          session.set(sessionValues)
+
+          return response
+        }
+        else {
+          return
+        }
+
+      })
+      .catch(err => {
+        console.log('BRK Unexpected Error', err)
+        inProgress = false
+        errors = err
+        return
+      })
   }
 
   async function setPayment(payment) {
@@ -151,10 +302,12 @@
       .then(response => {
         inProgress = false
         console.log('brk response!', response)
+        return
       })
       .catch(err => {
         inProgress = false
         errors = err
+        return
       })
   }
 
@@ -164,26 +317,64 @@
       .then(response => {
         inProgress = false
         console.log('brk response!', response)
+        return
       })
       .catch(err => {
         inProgress = false
         errors = err
+        return
       })
   }
 
   async function checkout(details) {
+    // Disable Btns
     inProgress = true
     return put(`auth/session/cart/checkout`, details, {}, $session.token, $session.session_uuid)
       .then(response => {
+
+        // re-enable Btns
         inProgress = false
+
         console.log('brk response!', response)
-        return goto(`/cart/checkout/confirmation?order_uuid=${response.data.ChannelOrder.order_uuid}`)
+
+        const sessionValues = {
+          ...$session
+        }
+
+        if (response.session) {
+          sessionValues.session_uuid = response.session
+        }
+        if (response.token) {
+          sessionValues.token = response.token
+        }
+        if (response.cart) {
+          sessionValues.cart = response.cart
+        }
+
+        // Update the session store
+        session.set(sessionValues)
+
+        if (response.data.ChannelOrder) {
+          return goto(`/cart/checkout/confirmation?order_uuid=${response.data.ChannelOrder.order_uuid}`)
+        }
+        else {
+          errors = [
+            'Checkout did not return an order!'
+          ]
+        }
       })
       .catch(err => {
+        // re-enable Btns
         inProgress = false
         errors = err
+        return
       })
   }
+
+
+  /************************
+   * UTILITIES
+   ************************/
 
   // Load the countries on mounting of the component
   onMount(async () => {
@@ -247,14 +438,33 @@
               <div>Not you? <a href="/login">Click Here</a></div>
             </div>
           {:else}
-            <div class="list-group-item">
-              <div class="text-muted">Account Setup</div>
-              <RegisterForm
-                value={ registerFormValue }
-                inProgress={ inProgress }
-                preloading="{ $preloading }"
-                on:register={register}
-              />
+            <div class="row">
+              <div class="col-sm-12 col-md-6">
+                <div class="list-group-item">
+                  <div class="text-muted">Setup an Account</div>
+                  <RegisterForm
+                    value={ registerFormValue }
+                    inProgress={ inProgress }
+                    preloading="{ $preloading }"
+                    on:register={e => register(e.detail)}
+                    errors={errors}
+                  />
+                </div>
+              </div>
+              <div class="col-sm-12 col-md-6">
+                <div class="list-group-item">
+                  <div class="text-muted">
+                    Log into an Account
+                  </div>
+                  <LoginForm
+                    value={ registerFormValue }
+                    inProgress={ inProgress }
+                    preloading="{ $preloading }"
+                    on:login={e => login(e.detail)}
+                    errors={errors}
+                  />
+                </div>
+              </div>
             </div>
           {/if}
           </div>
@@ -279,7 +489,8 @@
           </div>
           <div class="list-group-item">
             <h5 class="text-muted">Payment Information</h5>
-            <CreditCard />
+
+            <a on:click={e=> dialogPayment.open()}>OPEN</a>
           </div>
         </div>
       </StepPanel>
@@ -324,3 +535,14 @@
     </Steps>
   </div>
 </div>
+
+
+
+<Modal
+  bind:this={dialogPayment}
+  aria-labelledby="dialog-contact-title"
+  aria-describedby="dialog-contact-content"
+  on:MDCDialog:closed={closeHandler}
+>
+  <CreditCard />
+</Modal>

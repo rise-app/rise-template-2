@@ -8,6 +8,10 @@
   // the data we need to render the page
   export async function preload({path, params, query}, {token, session_uuid, channel}) {
 
+    if (!token) {
+      return this.redirect(302, '/login')
+    }
+
     const userReq = async () => {
       return rise.channelAuth.sessionUser({}, {
         session: session_uuid,
@@ -48,10 +52,12 @@
   import { goto, stores } from '@sapper/app'
   import { get, put, post } from 'utils'
   import AccountForm from '../_components/forms/AccountForm.svelte'
-  import ListErrors from '../_components/ListErrors.svelte'
+  import { ListErrors } from '../_components/ListErrors'
   import CustomerForm from '../_components/forms/CustomerForm.svelte'
 
   // COMPONENTS
+  import Dialog, { Title, Content, Actions } from '@smui/dialog'
+  import PasswordForm from '../_components/forms/PasswordForm.svelte'
 
   // IMPORTS
   export let
@@ -63,47 +69,114 @@
 
   let inProgress = false, errors
 
+
+  /************************
+   * DIALOGS
+   ************************/
+  let dialogPassword
+
+  /*******************************
+   * DIALOG HANDLERS
+   *******************************/
+  function closeHandler(event) {
+    console.log('closed', event)
+  }
+
+
+  /************************
+   * REQUESTS
+   ************************/
   async function updateUser(user) {
+    // Disable buttons
     inProgress = true
+    // Make update user request to backend
     return put(`auth/session/user`, user, {}, $session.token, $session.session_uuid)
       .then(response => {
+
+        // Update the session store
+        const sessionValues = {
+          ...$session
+        }
+        if (response.session) {
+          sessionValues.session_uuid = response.session
+        }
+        if (response.token) {
+          sessionValues.token = response.token
+        }
+        if (response.data) {
+          sessionValues.user = response.data
+        }
+        // Update the session store
+        session.set(sessionValues)
+
+        // Re-enable buttons
         inProgress = false
         console.log('brk response!', response)
       })
       .catch(err => {
+        // Re-enable buttons
         inProgress = false
         errors = err
       })
   }
 
   async function updateCustomer(user) {
+    // Disable buttons
     inProgress = true
+    // Make update customer request to backend
     return put(`auth/session/customer`, user, {}, $session.token, $session.session_uuid)
       .then(response => {
+        // Update the session store
+        const sessionValues = {
+          ...$session
+        }
+        if (response.session) {
+          sessionValues.session_uuid = response.session
+        }
+        if (response.token) {
+          sessionValues.token = response.token
+        }
+        if (response.data) {
+          sessionValues.customer = response.data
+        }
+        // Update the session store
+        session.set(sessionValues)
+
+        // Re-enable buttons
         inProgress = false
       })
       .catch(err => {
+        // Re-enable buttons
         inProgress = false
         errors = err
       })
   }
 
   async function logout() {
+    // Disable buttons
     inProgress = true
-    await post(`auth/logout`)
+    // Make logout request to backend
+    return post(`auth/logout`, null, {}, $session.token, $session.session_uuid)
+      .then(() => {
 
-    // AUTHENTICATION
-    $session.token = null
-    // We can keep the session id
+        // Clear the session values to only keep the session_uuid
+        const sessionValues = {
+          session_uuid: $session.session_uuid
+        }
+        // Update the session store
+        session.set(sessionValues)
 
-    // UTILITY
-    $session.channel = null
-    $session.user = null
-    $session.cart = null
-    $session.customer = null
+        // Re-enable buttons
+        inProgress = false
 
-    inProgress = false
-    return goto('/login')
+        // Redirect to login page
+        return goto('/login')
+      })
+      .catch(err => {
+        // Re-enable buttons
+        inProgress = false
+        errors = err
+      })
   }
 
 </script>
@@ -143,6 +216,7 @@
               {inProgress}
               preloading="{$preloading}"
               on:save={e=> updateUser(e.detail)}
+              on:password={e=> dialogPassword.open()}
             />
           </div>
 
@@ -168,3 +242,22 @@
     </div>
   </div>
 </div>
+
+<Dialog
+  bind:this={dialogPassword}
+  aria-labelledby="dialog-contact-title"
+  aria-describedby="dialog-contact-content"
+  on:MDCDialog:closed={closeHandler}
+>
+  <Title id="dialog-contact-title">
+    Edit Password
+  </Title>
+  <Content id="dialog-contact-content">
+    <PasswordForm
+      value={{}}
+      {inProgress}
+      preloading={$preloading}
+      on:password={e=> console.log(e.detail)}
+    />
+  </Content>
+</Dialog>
