@@ -192,19 +192,33 @@
         <Gallery { offer } />
       </div>
       <div class="col-sm-12 col-md-6">
-
-        <div class="product_category">
+        <div class="product_name mb-2">
+           <h1>{ title }</h1>
+        </div>
+        <div class="product_price mb-2">
+          <h3>
+             <strike><Currency price="{ offer.price_compare_at }" currency="{offer.currency}" /></strike> <Currency price={ offer.price_channel } currency={ offer.currency }/>
+          </h3>
+        </div>
+        <!-- <div class="product_category"> // placed below
           <small class="text-muted text-uppercase">
             { offer.type || 'uncategorized' }
           </small>
+        </div> -->
+        <div class="product_except mb-2">
+          <small class="text-muted">
+            {@html offer.excerpt_html || '' }
+          </small>
         </div>
-        <div class="product_name mb-2">
+        <div class="product_stock mb-2">
+            <span class="text-muted">In Stock:</span> { offer.inventory_quantity }
         </div>
-        <div class="product_price mb-2">
+
+        <!-- <div class="product_price mb-2"> // placed above changed to h3
           <h2>
             <Currency price={ offer.price_channel } currency={ offer.currency }/>
           </h2>
-        </div>
+        </div> -->
 
         <div class="product_description mb-2">
           {@html offer.description || '' }
@@ -227,7 +241,7 @@
               SKU: { offer.variant_sku || 'Select One' }
             </li>
             <li class="list-group-item">
-              Categories: NA
+              Categories: <small class="text-muted text-uppercase"> { offer.type || 'uncategorized' } </small>
             </li>
             <li class="list-group-item">
               Tags: { offer.tags }
