@@ -134,7 +134,7 @@
   $: updateStore()
 
   let total_items, btnsDisabled
-  $: total_items = cart.total_items
+  $: total_items = cart ? cart.total_items : 0
   $: btnsDisabled = !total_items
 
 </script>

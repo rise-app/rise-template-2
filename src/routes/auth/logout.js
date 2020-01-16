@@ -3,11 +3,15 @@ import * as config from 'config'
 
 export function post(req, res) {
 
+  const channel_uuid = req.session && req.session.channel && req.session.channel.channel_uuid
+    ? req.session.channel.channel_uuid
+    : config.rise.default_channel
+
   rise.channelAuth.logout({}, {
     session: req.session.session_uuid || req.headers.session,
     token: req.session.token || req.headers.authorization,
     params: {
-      channel_uuid: req.session.channel.channel_uuid || config.rise.default_channel
+      channel_uuid: channel_uuid
     }
   })
     .then((result) => {

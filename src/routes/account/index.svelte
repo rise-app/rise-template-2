@@ -156,7 +156,7 @@
     // Disable buttons
     inProgress = true
     // Make logout request to backend
-    return post(`auth/logout`, null, {}, $session.token, $session.session_uuid)
+    return post(`auth/logout`, {}, {}, $session.token, $session.session_uuid)
       .then(() => {
 
         // Clear the session values to only keep the session_uuid

@@ -2,6 +2,11 @@ import { rise } from 'sdk'
 import * as config from 'config'
 
 export function post(req, res) {
+
+  const channel_uuid = req.session && req.session.channel && req.session.channel.channel_uuid
+    ? req.session.channel.channel_uuid
+    : config.rise.default_channel
+
   const user = req.body
 
   rise.channelAuth.recover(user, {
