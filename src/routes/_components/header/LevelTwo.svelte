@@ -3,11 +3,14 @@
   import { createEventDispatcher } from 'svelte'
   import { debounce } from 'lodash'
   import { layout } from 'config'
+  import { goto, stores } from '@sapper/app'
 
   // COMPONENTS
 
   import Wishlist from './Wishlist.svelte'
   import Cart from './Cart.svelte'
+
+  const { session } = stores()
 
   // IMPORTS
   export let
@@ -34,11 +37,11 @@
 
   let isLoggedIn = false, term
   // WEIRD SVELTE!
-  $: if (user && user.user_uuid) {
-    isLoggedIn = !!(user && user.user_uuid)
+  $: if ($session.user) {
+    isLoggedIn = !!($session.user && $session.user.user_uuid)
   }
   else {
-    isLoggedIn = !!(user && user.user_uuid)
+    isLoggedIn = !!($session.user && $session.user.user_uuid)
   }
 
 

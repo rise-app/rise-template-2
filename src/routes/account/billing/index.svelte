@@ -128,7 +128,28 @@
     return put(`auth/session/customer/address_billing`, address, {}, $session.token, $session.session_uuid)
       .then(response => {
         inProgress = false
+
+        let sessionValues = {
+          ...$session
+        }
+
+        if (response.session) {
+          sessionValues.session_uuid = response.session
+        }
+
+        if (response.customer) {
+          sessionValues.customer = response.customer
+        }
+
+        if (response.data) {
+          sessionValues.customer.address_billing = response.data
+        }
+
+        session.set(sessionValues)
+
         console.log('brk response!', response)
+
+        return response
       })
       .catch(err => {
         inProgress = false
