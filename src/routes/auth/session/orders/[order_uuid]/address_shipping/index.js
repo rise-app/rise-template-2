@@ -9,8 +9,8 @@ export function get(req, res) {
   const order_uuid = req.params.order_uuid
 
   rise.channelAuth.getSessionCustomerOrderShipping({}, {
-    session: req.session.session_uuid,
-    token: req.session.token,
+    session: req.session.session_uuid || req.headers.session,
+    token: req.session.token || req.headers.authorization,
     params: {
       channel_uuid: channel_uuid,
       order_uuid: order_uuid
@@ -43,8 +43,8 @@ export function put(req, res) {
   const order_uuid = req.params.order_uuid
 
   rise.channelAuth.setSessionCustomerOrderShipping(order, {
-    session: req.session.session_uuid,
-    token: req.session.token,
+    session: req.session.session_uuid || req.headers.session,
+    token: req.session.token || req.headers.authorization,
     params: {
       channel_uuid: channel_uuid,
       order_uuid: order_uuid

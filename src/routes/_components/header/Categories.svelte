@@ -7,9 +7,6 @@
 
   // LOGIC
 
-
-  console.log('BRK NAV DESC', primary_navigation_campaigns)
-
 </script>
 
 <style type="text/scss">

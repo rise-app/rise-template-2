@@ -35,7 +35,6 @@
     // .then((channel) => { })
     return Promise.all([primaryNavReq()])
       .then(([nav_campaigns]) => {
-        console.log('brk nav_campaigns', nav_campaigns)
         return {
           primary_navigation_campaigns_query,
           primary_navigation_campaigns: nav_campaigns.data,
@@ -82,10 +81,10 @@
   $: path = $page.path
 
   $: if ($session.user) {
-    console.log('BRK HELLO USER', $session.user)
+    // console.log('BRK HELLO USER', $session.user)
   }
   else {
-    console.log('BRK HELLO USER 2', $session.user)
+    // console.log('BRK HELLO USER 2', $session.user)
   }
 
   let progress = 50

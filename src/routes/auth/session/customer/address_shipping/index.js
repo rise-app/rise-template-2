@@ -7,8 +7,8 @@ export function get(req, res) {
     : config.rise.default_channel
 
   rise.channelAuth.sessionCustomerShipping({}, {
-    session: req.session.session_uuid,
-    token: req.session.token,
+    session: req.session.session_uuid || req.headers.session,
+    token: req.session.token || req.headers.authorization,
     params: {
       channel_uuid: channel_uuid
     }
@@ -41,8 +41,8 @@ export function put(req, res) {
     : config.rise.default_channel
 
   rise.channelAuth.setSessionCustomerShipping(customer, {
-    session: req.session.session_uuid,
-    token: req.session.token,
+    session: req.session.session_uuid || req.headers.session,
+    token: req.session.token || req.headers.authorization,
     params: {
       channel_uuid: channel_uuid
     }

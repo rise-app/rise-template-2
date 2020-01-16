@@ -7,15 +7,19 @@
   export let order = {}, items = []
 
   // LOGIC
-
+  $: address_billing = order.address_billing || {}
+  $: address_shipping = order.address_shipping || {}
 </script>
 <style type="text/scss">
   @import "../../../theme/variables";
 
-
-  .order_items
+  .order_header
   {
     margin-top: 67px;
+  }
+  .order_items
+  {
+    margin-top: 30px;
   }
   .order_list
   {
@@ -83,12 +87,11 @@
   .order_total
   {
     width: 100%;
-    height: 60px;
     margin-top: 30px;
-    border: solid 1px #e8e8e8;
+    border: solid 1px $gray-100;
     box-shadow: 0px 1px 5px rgba(0,0,0,0.1);
-    padding-right: 46px;
-    padding-left: 15px;
+    padding-right: $card-columns-gap * 2;
+    padding-left: $card-columns-gap;
   }
   .order_total_title
   {
@@ -102,7 +105,7 @@
     display: inline-block;
     font-size: 18px;
     font-weight: 500;
-    margin-left: 26px;
+    margin-left: $card-columns-gap * 2;
     line-height: 60px;
   }
   .order_buttons
@@ -118,18 +121,18 @@
     font-weight: 400;
     line-height: 48px;
     color: rgba(0,0,0,0.5);
-    background: #FFFFFF;
-    border: solid 1px #b2b2b2;
+    background: $white;
+    border: solid 1px $gray-200;
     padding-left: 35px;
     padding-right: 35px;
     outline: none;
     cursor: pointer;
-    margin-right: 26px;
+    margin-left: $card-columns-gap * 2;
   }
   .order_button_clear:hover
   {
-    border-color: #0e8ce4;
-    color: #0e8ce4;
+    border-color: theme-color('primary');
+    color: theme-color('primary');
   }
   .order_button_checkout
   {
@@ -147,7 +150,19 @@
   }
 
 </style>
-
+<div class="order_header">
+  <div class="list-group order_list">
+    <div class="list-group-item">
+      { order.customer.name_display}
+      <br />
+      Billing
+      { address_billing.address_formatted || 'NA' }
+      <br />
+      Shipping
+      { address_shipping.address_formatted || 'NA'}
+    </div>
+  </div>
+</div>
 <!-- Order Items -->
 <div class="order_items">
   <div class="list-group order_list">
@@ -166,6 +181,33 @@
 
 <!-- Order Total -->
 <div class="order_total">
+  <div class="order_total_content text-md-right">
+    <div class="order_total_title">Subtotal:</div>
+    <div class="order_total_amount">
+      <Currency
+              price={order.total_subtotal}
+              currency={order.currency}
+      />
+    </div>
+  </div>
+  <div class="order_total_content text-md-right">
+    <div class="order_total_title">Tax Total:</div>
+    <div class="order_total_amount">
+      <Currency
+              price={order.total_taxes}
+              currency={order.currency}
+      />
+    </div>
+  </div>
+  <div class="order_total_content text-md-right">
+    <div class="order_total_title">Shipping Total:</div>
+    <div class="order_total_amount">
+      <Currency
+              price={order.total_shipping}
+              currency={order.currency}
+      />
+    </div>
+  </div>
   <div class="order_total_content text-md-right">
     <div class="order_total_title">Order Total:</div>
     <div class="order_total_amount">

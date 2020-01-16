@@ -9,8 +9,8 @@ export function put(req, res) {
 
   // Checkout the Current Session Cart
   rise.channelAuth.checkoutSessionCart(cart, {
-    session: req.session.session_uuid,
-    token: req.session.token,
+    session: req.session.session_uuid || req.headers.session,
+    token: req.session.token || req.headers.authorization,
     params: {
       channel_uuid: channel_uuid
     }
@@ -19,8 +19,8 @@ export function put(req, res) {
 
       // Get the new Session Cart
       return rise.channelAuth.sessionCart(cart, {
-        session: req.session.session_uuid,
-        token: req.session.token,
+        session: req.session.session_uuid || req.headers.session,
+        token: req.session.token || req.headers.authorization,
         params: {
           channel_uuid: channel_uuid
         }

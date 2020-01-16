@@ -4,8 +4,8 @@ import * as config from 'config'
 export function post(req, res) {
 
   rise.channelAuth.logout({}, {
-    session: req.session.session_uuid,
-    token: req.session.token,
+    session: req.session.session_uuid || req.headers.session,
+    token: req.session.token || req.headers.authorization,
     params: {
       channel_uuid: req.session.channel.channel_uuid || config.rise.default_channel
     }

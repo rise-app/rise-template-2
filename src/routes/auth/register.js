@@ -5,7 +5,7 @@ export function post(req, res) {
   const user = req.body
 
   rise.channelAuth.register(user, {
-    session: req.session.session_uuid,
+    session: req.session.session_uuid || req.headers.session,
     params: {
       channel_uuid: req.body.channel_uuid || config.rise.default_channel
     }

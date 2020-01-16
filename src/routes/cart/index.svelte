@@ -9,6 +9,7 @@
   // the data we need to render the page
   export async function preload({path, params, query}, {token, session_uuid, channel}) {
 
+    console.log('brk session', session_uuid)
     // Query for Cart Items
     let items_query = riseQuery(pluckQuery(query, 'vq'))
 
@@ -16,28 +17,32 @@
       return get(`auth/session/cart`, {}, token, session_uuid)
     }
 
-    const itemsReq = async (_handle) => {
+    const itemsReq = async () => {
       return get(`auth/session/cart/items`, {}, token, session_uuid)
     }
 
     return Promise.all([
-      getCartReq(),
-      Promise.resolve() // itemsReq(handle)
+      Promise.resolve(), // getCartReq(),
+      itemsReq()
     ])
       .then(([
          cart = {},
          items = {}
        ]) => {
+        console.log('BRK session items', cart)
         return {
-          session_uuid: cart.session,
 
-          cart: cart.data,
+          session_uuid: items.session || session_uuid,
 
+          // cart: cart.data,
+
+          cart: items.cart,
           items_query,
-          // items: items.data,
-          // items_total: items.total,
-          // items_offset: items.offset,
-          // items_limit: items.limit,
+          // items: cart.data.items
+          items: items.data,
+          items_total: items.total,
+          items_offset: items.offset,
+          items_limit: items.limit,
         }
       })
       .catch(err => {
@@ -58,6 +63,8 @@
 
   // IMPORTS
   export let session_uuid, cart = {}, items = []
+
+  console.log('brk ', cart, items)
 
   // INCLUDES
   const { preloading, page, session } = stores()
@@ -117,17 +124,18 @@
       sessionValues.cart = cart
     }
 
-    // if (items) {
-    //   sessionValues.cart.items = items
-    // }
+    if (items) {
+      sessionValues.cart.items = items
+    }
 
     session.set(sessionValues)
   }
 
   $: updateStore()
 
-  let btnsDisabled
-  $: btnsDisabled = !cart.total_items
+  let total_items, btnsDisabled
+  $: total_items = cart.total_items
+  $: btnsDisabled = !total_items
 
 </script>
 <style type="text/scss">
@@ -218,17 +226,17 @@
   .order_total
   {
     width: 100%;
-    height: 60px;
+    /*height: 60px;*/
     margin-top: 30px;
     border: solid 1px $gray-100;
     box-shadow: 0px 1px 5px rgba(0,0,0,0.1);
-    padding-right: 46px;
-    padding-left: 15px;
+    padding-right: $card-columns-gap * 2;
+    padding-left: $card-columns-gap;
   }
   .order_total_title
   {
     display: inline-block;
-    font-size: 14px;
+    font-size: 1rem;
     color: rgba(0,0,0,0.5);
     line-height: 60px;
   }
@@ -237,7 +245,7 @@
     display: inline-block;
     font-size: 18px;
     font-weight: 500;
-    margin-left: 26px;
+    margin-left: $card-columns-gap * 2;
     line-height: 60px;
   }
   .cart_buttons
@@ -259,7 +267,7 @@
     padding-right: 35px;
     outline: none;
     cursor: pointer;
-    margin-right: 26px;
+    margin-left: $card-columns-gap * 2;
   }
   .cart_button_clear:hover
   {
@@ -296,7 +304,7 @@
           <div class="cart_title">Shopping Cart</div>
           <div class="cart_items">
             <div class="list-group cart_list">
-              {#each cart.items as item, i (item.item_uuid)}
+              {#each items as item, i (item.item_uuid)}
                 <CartItem {item} />
               {:else}
                 <div class="list-group-item">
@@ -336,6 +344,33 @@
 
           <!-- Order Total -->
           <div class="order_total">
+            <div class="order_total_content text-md-right">
+              <div class="order_total_title">Subtotal:</div>
+              <div class="order_total_amount">
+                <Currency
+                  price={cart.total_subtotal}
+                  currency={cart.currency}
+                />
+              </div>
+            </div>
+            <div class="order_total_content text-md-right">
+              <div class="order_total_title">Tax Total:</div>
+              <div class="order_total_amount">
+                <Currency
+                  price={cart.total_taxes}
+                  currency={cart.currency}
+                />
+              </div>
+            </div>
+            <div class="order_total_content text-md-right">
+              <div class="order_total_title">Shipping Total:</div>
+              <div class="order_total_amount">
+                <Currency
+                  price={cart.total_shipping}
+                  currency={cart.currency}
+                />
+              </div>
+            </div>
             <div class="order_total_content text-md-right">
               <div class="order_total_title">Cart Total:</div>
               <div class="order_total_amount">

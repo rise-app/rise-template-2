@@ -23,7 +23,7 @@ export function post(req, res) {
   }
 
   rise.channelAuth.login(user, {
-    session: req.session.session_uuid,
+    session: req.session.session_uuid || req.headers.session,
     params: {
       channel_uuid: req.body.channel_uuid || config.rise.default_channel
     }

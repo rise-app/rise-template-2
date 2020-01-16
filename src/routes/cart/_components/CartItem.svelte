@@ -91,7 +91,7 @@
     <div class="cart_item_name cart_info_col">
       <div class="cart_item_title">Name</div>
       <div class="cart_item_text">
-        <a href="/offer/{ item.offer_handle || item.handle }">
+        <a href="/offer/{ item.offer_handle || item.handle }?sku={item.variant_sku}">
           { item.variant_title || item.offer_title }
         </a>
       </div>

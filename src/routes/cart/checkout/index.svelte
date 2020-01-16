@@ -423,9 +423,9 @@
 
     <Steps on:complete={checkout} {inProgress} preloading="{$preloading}">
       <StepList>
-        <Step>Account Setup</Step>
-        <Step>Billing Info</Step>
-        <Step>Shipping Info</Step>
+        <Step>Account</Step>
+        <Step>Billing</Step>
+        <Step>Shipping</Step>
       </StepList>
 
       <StepPanel>
