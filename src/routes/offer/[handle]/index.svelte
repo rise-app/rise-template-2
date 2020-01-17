@@ -217,14 +217,8 @@
           </small>
         </div>
         <div class="product_stock mb-2">
-            <span class="text-muted">In Stock:</span> { offer.inventory_quantity }
+            <span class="text-muted">In Stock:</span> { offer.inventory_quantity || 0 }
         </div>
-
-        <!-- <div class="product_price mb-2"> // placed above changed to h3
-          <h2>
-            <Currency price={ offer.price_channel } currency={ offer.currency }/>
-          </h2>
-        </div> -->
 
         <div class="product_description mb-2">
           {@html offer.description || '' }

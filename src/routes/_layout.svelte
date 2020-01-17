@@ -2,6 +2,11 @@
   import { rise } from 'sdk'
   import { riseQuery, pluckQuery } from 'query'
   import { rise as riseConfig } from 'config'
+  import { get, put, post } from 'utils'
+
+  const channelReq = async (session_uuid, token) => {
+    return get(`auth/session/channel`, {}, token, session_uuid)
+  }
 
   const campaign_attributes = [
     'collection_uuid',
@@ -10,14 +15,6 @@
     'handle',
     'image_primary'
   ]
-
-  const channelReq = async(session_uuid, token) => rise.channelAuth.sessionChannel({}, {
-    session: session_uuid,
-    token: token,
-    params: {
-    },
-    query: riseQuery({})
-  })
 
   const primaryNavReq = async(session_uuid, token, primary_navigation_campaigns_query) => rise.channelPublicCampaign.listDescendantsByHandle({}, {
     session: session_uuid,
@@ -42,7 +39,7 @@
     // return rise.channelPublic.get()
     // .then((channel) => { })
     return Promise.all([
-      Promise.resolve(), // channelReq(session_uuid, token)
+      channelReq(session_uuid, token),
       primaryNavReq(session_uuid, token, primary_navigation_campaigns_query)
     ])
       .then(([
@@ -98,18 +95,38 @@
 
   // INCLUDES
   let brand = config.brand
+  const { preloading, page, session } = stores()
 
   // LOGIC
-  const { preloading, page, session } = stores()
 
   let path = ''
   $: path = $page.path
+
+  $: updateStore()
 
   $: if ($session.user) {
     // console.log('BRK HELLO USER', $session.user)
   }
   else {
     // console.log('BRK HELLO USER 2', $session.user)
+  }
+
+  function updateStore() {
+
+    // Update the session information if it's changed
+    const sessionValues = {
+      ...$session
+    }
+    if (session_uuid) {
+      sessionValues.session_uuid = session_uuid
+    }
+    if (token) {
+      sessionValues.token = token
+    }
+
+    session.set(sessionValues)
+
+    return sessionValues
   }
 
   let progress = 50

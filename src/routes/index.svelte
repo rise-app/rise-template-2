@@ -36,6 +36,18 @@
     })
   })
 
+  const featuredCampaignsReq = async(session_uuid, token, featured_campaigns_query) => rise.channelPublicCampaign.listChildrenByHandle({}, {
+    session: session_uuid,
+    token: token,
+    params: {
+      handle: riseConfig.featured_handle
+    },
+    query: riseQuery({
+      ...featured_campaigns_query,
+      attributes: campaign_attributes
+    })
+  })
+
 
   const onSaleReq = async(session_uuid, token, on_sale_query) => rise.channelPublicCampaign.listOffersByHandle({}, {
     session: session_uuid,
@@ -160,6 +172,7 @@
   export async function preload({params, query}, {user, token, session_uuid}) {
 
     let featured_query = riseQuery(pluckQuery(query, 'fq'))
+    let featured_campaigns_query = riseQuery(pluckQuery(query, 'fcq'))
     let on_sale_query = riseQuery(pluckQuery(query, 'osq'))
     let best_rated_query = riseQuery(pluckQuery(query, 'brq'))
     let deals_of_the_week_query = riseQuery(pluckQuery(query, 'dotwq'))
@@ -172,6 +185,7 @@
     let brands_query = riseQuery(pluckQuery(query, 'bq'))
 
     return Promise.all([
+      featuredCampaignsReq(session_uuid, token, featured_campaigns_query),
       featuredReq(session_uuid, token, featured_query),
       onSaleReq(session_uuid, token, on_sale_query),
       Promise.resolve(), // bestRatedReq(session_uuid, token, best_rated_query),
@@ -183,6 +197,7 @@
       brandsReq(session_uuid, token, brands_query)
     ])
       .then(([
+        featured_campaigns = {},
         featured_offers = {},
         on_sale_offers = {},
         best_rated_offers = {},
@@ -195,6 +210,12 @@
       ]) => {
 
         return {
+          featured_campaigns_query,
+          featured_campaigns: featured_campaigns.data,
+          featured_campaigns_total: featured_campaigns.total,
+          featured_campaigns_offset: featured_campaigns.offset,
+          featured_campaigns_limit: featured_campaigns.limit,
+
           featured_query,
           featured_offers: featured_offers.data,
           featured_offers_total: featured_offers.total,
@@ -284,8 +305,16 @@
 
   import RecentlyViewed from './_components/layout/RecentlyViewed.svelte'
   import Brands from './_components/layout/Brands.svelte'
+  import CampaignGallery from './_components/layout/CampaignGallery.svelte'
 
-  export let featured_query,
+  export let
+    featured_campaigns_query,
+    featured_campaigns,
+    featured_campaigns_total,
+    featured_campaigns_offset,
+    featured_campaigns_limit,
+
+    featured_query,
     featured_offers,
     featured_offers_total,
     featured_offers_offset,
@@ -356,6 +385,18 @@
 <svelte:head>
   <title>{ brand.name }</title>
 </svelte:head>
+
+<CampaignGallery
+  campaign={{
+    handle: riseConfig.featured_handle,
+    title: 'Featured'
+  }}
+  {featured_campaigns_query}
+  {featured_campaigns}
+  {featured_campaigns_limit}
+  {featured_campaigns_offset}
+  {featured_campaigns_total}
+></CampaignGallery>
 
 <BannerOne></BannerOne>
 

@@ -4,6 +4,14 @@
   import { rise as riseConfig, brand } from 'config'
   import { get, put, post } from 'utils'
 
+  const getCartReq = async (session_uuid, token) => {
+    return get(`auth/session/cart`, {}, token, session_uuid)
+  }
+
+  const listItemsReq = async (session_uuid, token) => {
+    return get(`auth/session/cart/items`, {}, token, session_uuid)
+  }
+
   // the (optional) preload function takes a
   // `{ path, params, query }` object and turns it into
   // the data we need to render the page
@@ -13,17 +21,11 @@
     // Query for Cart Items
     let items_query = riseQuery(pluckQuery(query, 'vq'))
 
-    const getCartReq = async () => {
-      return get(`auth/session/cart`, {}, token, session_uuid)
-    }
 
-    const itemsReq = async () => {
-      return get(`auth/session/cart/items`, {}, token, session_uuid)
-    }
 
     return Promise.all([
-      Promise.resolve(), // getCartReq(),
-      itemsReq()
+      Promise.resolve(), // getCartReq(session_uuid, token),
+      listItemsReq(session_uuid, token)
     ])
       .then(([
          cart = {},
