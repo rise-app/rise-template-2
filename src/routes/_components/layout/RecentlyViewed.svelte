@@ -3,7 +3,7 @@
 
 </script>
 <style type="text/scss">
-
+  @import "../../../theme/variables";
 
   .viewed
   {

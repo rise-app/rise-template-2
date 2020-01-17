@@ -3,6 +3,34 @@
   import { riseQuery, pluckQuery } from 'query'
   import { rise as riseConfig } from 'config'
 
+  const campaign_attributes = [
+    'collection_uuid',
+    'title',
+    'description',
+    'handle',
+    'image_primary'
+  ]
+
+  const channelReq = async(session_uuid, token) => rise.channelAuth.sessionChannel({}, {
+    session: session_uuid,
+    token: token,
+    params: {
+    },
+    query: riseQuery({})
+  })
+
+  const primaryNavReq = async(session_uuid, token, primary_navigation_campaigns_query) => rise.channelPublicCampaign.listDescendantsByHandle({}, {
+    session: session_uuid,
+    token: token,
+    params: {
+      handle: riseConfig.primary_navigation_handle
+    },
+    query: riseQuery({
+      ...primary_navigation_campaigns_query,
+      attributes: campaign_attributes
+    })
+  })
+
   // the (optional) preload function takes a
   // `{ path, params, query }` object and turns it into
   // the data we need to render the page
@@ -11,31 +39,24 @@
     // Fixes deep nested objects
     let primary_navigation_campaigns_query = riseQuery(pluckQuery(query, 'pnq'))
 
-    let campaign_attributes = [
-      'collection_uuid',
-      'title',
-      'description',
-      'handle',
-      'image_primary'
-    ]
-
-    const primaryNavReq = async() => rise.channelPublicCampaign.listDescendantsByHandle({}, {
-      session: session_uuid,
-      token: token,
-      params: {
-        handle: riseConfig.primary_navigation_handle
-      },
-      query: riseQuery({
-        ...primary_navigation_campaigns_query,
-        attributes: campaign_attributes
-      })
-    })
-
     // return rise.channelPublic.get()
     // .then((channel) => { })
-    return Promise.all([primaryNavReq()])
-      .then(([nav_campaigns]) => {
+    return Promise.all([
+      Promise.resolve(), // channelReq(session_uuid, token)
+      primaryNavReq(session_uuid, token, primary_navigation_campaigns_query)
+    ])
+      .then(([
+          channel = {},
+          nav_campaigns = {}
+        ]) => {
         return {
+          // Config
+          channel,
+          // Session
+          session_uuid,
+          token,
+
+          // Nav
           primary_navigation_campaigns_query,
           primary_navigation_campaigns: nav_campaigns.data,
           primary_navigation_campaigns_total: nav_campaigns.total,
@@ -63,7 +84,11 @@
   import Footer from './_components/footer/Footer'
 
   // IMPORTS
-  export let segment,
+  export let
+    segment,
+    session_uuid,
+    token,
+    channel,
     primary_navigation_campaigns_query = {},
     primary_navigation_campaigns = [],
     primary_navigation_campaigns_total,

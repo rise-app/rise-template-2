@@ -230,13 +230,13 @@
 
         if (response.data) {
           const sessionValues = {
+            ...$session,
             session_uuid: response.session,
             token: response.token,
             user: response.data.ChannelUser,
             channel: response.data.Channel,
             cart: response.data.ChannelCart,
-            customer: response.data.ChannelCustomer,
-            ...$session,
+            customer: response.data.ChannelCustomer
           }
           session.set(sessionValues)
 
@@ -271,12 +271,12 @@
 
         if (response.data) {
           const sessionValues = {
+            ...$session,
             session_uuid: response.session,
             token: response.token,
             user: response.data.ChannelUser,
             cart: response.data.ChannelCart,
-            channel: response.data.Channel,
-            ...$session,
+            channel: response.data.Channel
           }
 
           session.set(sessionValues)
@@ -535,8 +535,6 @@
     </Steps>
   </div>
 </div>
-
-
 
 <Modal
   bind:this={dialogPayment}

@@ -52,6 +52,7 @@
         if (response.data) {
 
           const sessionValues = {
+            ...$session,
             // Authentication
             session_uuid: response.session,
             token: response.token,
@@ -61,7 +62,6 @@
             cart: response.data.ChannelCart,
             customer: response.data.ChannelCustomer,
             channel: response.data.Channel,
-            ...$session,
           }
           session.set(sessionValues)
 

@@ -6,6 +6,7 @@
     trending_sellers_offers_limit = 10
 </script>
 <style type="text/scss">
+  @import "../../../theme/variables";
 
 </style>
 

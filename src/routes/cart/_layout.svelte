@@ -1,5 +1,5 @@
 <script>
-  import Newsletter from '../_components/Newsletter.svelte'
+  import Newsletter from '../_components/layout/Newsletter.svelte'
 </script>
 
 <slot></slot>

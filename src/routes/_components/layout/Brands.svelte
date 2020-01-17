@@ -7,7 +7,7 @@
 
 </script>
 <style type="text/scss">
-@import "../../theme/variables";
+@import "../../../theme/variables";
 
 /*********************************
 15. Brands

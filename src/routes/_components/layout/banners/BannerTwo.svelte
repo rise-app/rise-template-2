@@ -1,7 +1,7 @@
 <script></script>
 
 <style type="text/scss">
-  @import "../../../theme/variables";
+  @import "../../../../theme/variables";
   /*********************************
   4. Banner
   *********************************/

@@ -12,9 +12,9 @@
 
 </script>
 <script>
-  import Newsletter from '../../_components/Newsletter.svelte'
-  import RecentlyViewed from '../../_components/RecentlyViewed.svelte'
-  import Brands from '../../_components/Brands.svelte'
+  import Newsletter from '../../_components/layout/Newsletter.svelte'
+  import RecentlyViewed from '../../_components/layout/RecentlyViewed.svelte'
+  import Brands from '../../_components/layout/Brands.svelte'
 </script>
 
 

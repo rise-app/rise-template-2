@@ -32,6 +32,7 @@
 
 </script>
 <style type="text/scss">
+  @import "../../../theme/variables";
 /*********************************
 5. Newsletter
 *********************************/

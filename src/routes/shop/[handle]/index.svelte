@@ -171,9 +171,9 @@
   import { goto, stores } from '@sapper/app'
 
   // COMPONENTS
-  import RecentlyViewed from '../../_components/RecentlyViewed.svelte'
-  import Brands from '../../_components/Brands.svelte'
-  import Newsletter from '../../_components/Newsletter.svelte'
+  import RecentlyViewed from '../../_components/layout/RecentlyViewed.svelte'
+  import Brands from '../../_components/layout/Brands.svelte'
+  import Newsletter from '../../_components/layout/Newsletter.svelte'
   import Sidebar from '../_components/Sidebar.svelte'
   import Offers from '../_components/Offers.svelte'
   import Sort from '../_components/Sort.svelte'

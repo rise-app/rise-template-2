@@ -43,6 +43,7 @@
         if (response.data) {
           // Store the current Session Values
           const sessionValues = {
+            ...$session,
             // Authentication
             session_uuid: response.session,
             token: response.token,
@@ -51,8 +52,7 @@
             user: response.data.ChannelUser,
             cart: response.data.ChannelCart,
             customer: response.data.ChannelCustomer,
-            channel: response.data.Channel,
-            ...$session,
+            channel: response.data.Channel
           }
 
           // Update the Session Store

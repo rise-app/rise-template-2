@@ -3,6 +3,36 @@
   import { riseQuery, pluckQuery } from 'query'
   import { rise as riseConfig } from 'config'
 
+
+  const offerReq = async (session_uuid, token, handle) => {
+    if (handle) {
+      return rise.channelPublicOffer.getByHandle({}, {
+        session: session_uuid,
+        token: token,
+        params: {
+          handle: handle
+        }
+      })
+    } else {
+      return Promise.resolve()
+    }
+  }
+
+  const variantsReq = async (session_uuid, token, handle, variants_query) => {
+    if (handle) {
+      return rise.channelPublicOfferVariant.listByHandle({}, {
+        session: session_uuid,
+        token: token,
+        params: {
+          handle: handle
+        },
+        query: riseQuery(variants_query)
+      })
+    } else {
+      Promise.resolve()
+    }
+  }
+
   // the (optional) preload function takes a
   // `{ path, params, query }` object and turns it into
   // the data we need to render the page
@@ -12,39 +42,10 @@
     // Fixes deep nested objects
     let variants_query = riseQuery(pluckQuery(query, 'vq'))
 
-    const offerReq = async (_handle) => {
-      if (_handle) {
-        return rise.channelPublicOffer.getByHandle({}, {
-          session: session_uuid,
-          token: token,
-          params: {
-            handle: _handle
-          }
-        })
-      } else {
-        return Promise.resolve()
-      }
-    }
-
-    const variantsReq = async (_handle) => {
-      if (_handle) {
-        return rise.channelPublicOfferVariant.listByHandle({}, {
-          session: session_uuid,
-          token: token,
-          params: {
-            handle: _handle
-          },
-          query: riseQuery(variants_query)
-        })
-      } else {
-        Promise.resolve()
-      }
-    }
-
 
     return Promise.all([
-      offerReq(handle),
-      variantsReq(handle)
+      offerReq(session_uuid, token, handle),
+      variantsReq(session_uuid, token, handle, variants_query)
     ])
       .then(([
          offer = {},
@@ -107,8 +108,8 @@
 
   let inCart
   $: inCart = $session.cart
-          && $session.cart.items
-          && $session.cart.items.find(i => i.offer_uuid === offer.offer_uuid)
+      && $session.cart.items
+      && $session.cart.items.find(i => i.offer_uuid === offer.offer_uuid)
 
   async function addItemToCart(item) {
     // Disable Buttons
@@ -197,7 +198,12 @@
         </div>
         <div class="product_price mb-2">
           <h3>
-             <strike><Currency price="{ offer.price_compare_at }" currency="{offer.currency}" /></strike> <Currency price={ offer.price_channel } currency={ offer.currency }/>
+            {#if offer.price_compare_at !== offer.total_price_calculated}
+              <strike>
+                <Currency price="{ offer.price_compare_at }" currency="{offer.currency}" />
+              </strike>
+            {/if}
+            <Currency price={ offer.price_channel } currency={ offer.currency }/>
           </h3>
         </div>
         <!-- <div class="product_category"> // placed below

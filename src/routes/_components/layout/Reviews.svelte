@@ -1,6 +1,5 @@
 <style type="text/scss">
-
-  @import "../../theme/variables";
+  @import "../../../theme/variables";
   /*********************************
   13. Latest Reviews
   *********************************/

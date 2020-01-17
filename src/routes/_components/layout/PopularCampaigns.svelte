@@ -8,6 +8,7 @@
 </script>
 
 <style type="text/scss">
+  @import "../../../theme/variables";
   /*********************************
 7. Popular Categories
 *********************************/

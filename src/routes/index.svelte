@@ -1,7 +1,161 @@
 <script context="module">
   import { rise } from 'sdk'
   import { riseQuery, pluckQuery } from 'query'
-  import { rise as riseConfig } from 'config'
+  import { rise as riseConfig, brand } from 'config'
+
+
+  const offer_attributes = [
+    'offer_uuid',
+    'title',
+    'description',
+    'handle',
+    'price_channel',
+    'total_price_calculated',
+    'image_primary',
+    'tags',
+    'options'
+  ]
+
+  const campaign_attributes = [
+    'collection_uuid',
+    'title',
+    'description',
+    'handle',
+    'image_primary'
+  ]
+
+  const featuredReq = async(session_uuid, token, featured_query) => rise.channelPublicCampaign.listOffersByHandle({}, {
+    session: session_uuid,
+    token: token,
+    params: {
+      handle: riseConfig.featured_handle
+    },
+    query: riseQuery({
+      ...featured_query,
+      attributes: offer_attributes
+    })
+  })
+
+
+  const onSaleReq = async(session_uuid, token, on_sale_query) => rise.channelPublicCampaign.listOffersByHandle({}, {
+    session: session_uuid,
+    token: token,
+    params: {
+      handle: riseConfig.on_sale_handle
+    },
+    query: riseQuery({
+      ...on_sale_query,
+      attributes: offer_attributes
+    })
+  })
+
+  const bestRatedReq = async(session_uuid, token, best_rated_query) => rise.channelPublicCampaign.listOffersByHandle({}, {
+    session: session_uuid,
+    token: token,
+    params: {
+      handle: riseConfig.best_rated_handle
+    },
+    query: riseQuery({
+      ...best_rated_query,
+      attributes: offer_attributes
+    })
+  })
+
+  const dealsOfTheWeekReq = async(session_uuid, token, deals_of_the_week_query) => rise.channelPublicCampaign.listOffersByHandle({}, {
+    session: session_uuid,
+    token: token,
+    params: {
+      handle: riseConfig.deals_of_the_week_handle
+    },
+    query: riseQuery({
+      ...deals_of_the_week_query,
+      attributes: offer_attributes
+    })
+  })
+
+  const popularCategoriesReq = async(session_uuid, token, popular_categories_query) => rise.channelPublicCampaign.listChildrenByHandle({}, {
+    session: session_uuid,
+    token: token,
+    params: {
+      handle: riseConfig.popular_categories_handle
+    },
+    query: riseQuery({
+      ...popular_categories_query,
+      attributes: campaign_attributes
+    })
+  })
+
+  const hotNewArrivalsReq = async(session_uuid, token, hot_new_arrivals_query) => rise.channelPublicCampaign.listOffersByHandle({}, {
+    session: session_uuid,
+    token: token,
+    params: {
+      handle: riseConfig.hot_new_arrivals_handle
+    },
+    query: riseQuery({
+      ...hot_new_arrivals_query,
+      attributes: offer_attributes
+    })
+  })
+
+  const hotNewArrivalsFeaturedReq = async(session_uuid, token, hot_new_arrivals_featured_query) => rise.channelPublicCampaign.listOffersByHandle({}, {
+    session: session_uuid,
+    token: token,
+    params: {
+      handle: riseConfig.hot_new_arrivals_featured_handle
+    },
+    query: riseQuery({
+      ...hot_new_arrivals_featured_query,
+      attributes: offer_attributes
+    })
+  })
+
+  const hotBestSellersReq = async(session_uuid, token, hot_best_sellers_query) => rise.channelPublicCampaign.listOffersByHandle({}, {
+    session: session_uuid,
+    token: token,
+    params: {
+      handle: riseConfig.hot_best_sellers_handle
+    },
+    query: riseQuery({
+      ...hot_best_sellers_query,
+      attributes: offer_attributes
+    })
+  })
+
+  const hotBestSellersFeaturedReq = async(session_uuid, token, hot_best_sellers_featured_query) => rise.channelPublicCampaign.listOffersByHandle({}, {
+    session: session_uuid,
+    token: token,
+    params: {
+      handle: riseConfig.hot_best_sellers_featured_handle
+    },
+    query: riseQuery({
+      ...hot_best_sellers_featured_query,
+      attributes: offer_attributes
+    })
+  })
+
+  const trendingSellersReq = async(session_uuid, token, trending_sellers_query) => rise.channelPublicCampaign.listOffersByHandle({}, {
+    session: session_uuid,
+    token: token,
+    params: {
+      handle: riseConfig.trending_sellers_handle
+    },
+    query: riseQuery({
+      ...trending_sellers_query,
+      attributes: offer_attributes
+    })
+  })
+
+  const brandsReq = async(session_uuid, token, brands_query) => rise.channelPublicCampaign.listChildrenByHandle({}, {
+    session: session_uuid,
+    token: token,
+    params: {
+      handle: riseConfig.brands_handle
+    },
+    query: riseQuery({
+      ...brands_query,
+      attributes: campaign_attributes
+    })
+  })
 
   export async function preload({params, query}, {user, token, session_uuid}) {
 
@@ -17,168 +171,16 @@
     let trending_sellers_query = riseQuery(pluckQuery(query, 'tsq'))
     let brands_query = riseQuery(pluckQuery(query, 'bq'))
 
-    let offer_attributes = [
-      'offer_uuid',
-      'title',
-      'description',
-      'handle',
-      'price_channel',
-      'total_price_calculated',
-      'image_primary',
-      'tags',
-      'options'
-    ]
-
-    let campaign_attributes = [
-      'collection_uuid',
-      'title',
-      'description',
-      'handle',
-      'image_primary'
-    ]
-
-    const featuredReq = async() => rise.channelPublicCampaign.listOffersByHandle({}, {
-      session: session_uuid,
-      token: token,
-      params: {
-        handle: riseConfig.featured_handle
-      },
-      query: riseQuery({
-        ...featured_query,
-        attributes: offer_attributes
-      })
-    })
-
-    const onSaleReq = async() => rise.channelPublicCampaign.listOffersByHandle({}, {
-      session: session_uuid,
-      token: token,
-      params: {
-        handle: riseConfig.on_sale_handle
-      },
-      query: riseQuery({
-        ...on_sale_query,
-        attributes: offer_attributes
-      })
-    })
-
-    const bestRatedReq = async() => rise.channelPublicCampaign.listOffersByHandle({}, {
-      session: session_uuid,
-      token: token,
-      params: {
-        handle: riseConfig.best_rated_handle
-      },
-      query: riseQuery({
-        ...best_rated_query,
-        attributes: offer_attributes
-      })
-    })
-
-    const dealsOfTheWeekReq = async() => rise.channelPublicCampaign.listOffersByHandle({}, {
-      session: session_uuid,
-      token: token,
-      params: {
-        handle: riseConfig.deals_of_the_week_handle
-      },
-      query: riseQuery({
-        ...deals_of_the_week_query,
-        attributes: offer_attributes
-      })
-    })
-
-    const popularCategoriesReq = async() => rise.channelPublicCampaign.listChildrenByHandle({}, {
-      session: session_uuid,
-      token: token,
-      params: {
-        handle: riseConfig.popular_categories_handle
-      },
-      query: riseQuery({
-        ...popular_categories_query,
-        attributes: campaign_attributes
-      })
-    })
-
-    const hotNewArrivalsReq = async() => rise.channelPublicCampaign.listOffersByHandle({}, {
-      session: session_uuid,
-      token: token,
-      params: {
-        handle: riseConfig.hot_new_arrivals_handle
-      },
-      query: riseQuery({
-        ...hot_new_arrivals_query,
-        attributes: offer_attributes
-      })
-    })
-
-    const hotNewArrivalsFeaturedReq = async() => rise.channelPublicCampaign.listOffersByHandle({}, {
-      session: session_uuid,
-      token: token,
-      params: {
-        handle: riseConfig.hot_new_arrivals_featured_handle
-      },
-      query: riseQuery({
-        ...hot_new_arrivals_featured_query,
-        attributes: offer_attributes
-      })
-    })
-
-    const hotBestSellersReq = async() => rise.channelPublicCampaign.listOffersByHandle({}, {
-      session: session_uuid,
-      token: token,
-      params: {
-        handle: riseConfig.hot_best_sellers_handle
-      },
-      query: riseQuery({
-        ...hot_best_sellers_query,
-        attributes: offer_attributes
-      })
-    })
-
-    const hotBestSellersFeaturedReq = async() => rise.channelPublicCampaign.listOffersByHandle({}, {
-      session: session_uuid,
-      token: token,
-      params: {
-        handle: riseConfig.hot_best_sellers_featured_handle
-      },
-      query: riseQuery({
-        ...hot_best_sellers_featured_query,
-        attributes: offer_attributes
-      })
-    })
-
-    const trendingSellersReq = async() => rise.channelPublicCampaign.listOffersByHandle({}, {
-      session: session_uuid,
-      token: token,
-      params: {
-        handle: riseConfig.trending_sellers_handle
-      },
-      query: riseQuery({
-        ...trending_sellers_query,
-        attributes: offer_attributes
-      })
-    })
-
-    const brandsReq = async() => rise.channelPublicCampaign.listChildrenByHandle({}, {
-      session: session_uuid,
-      token: token,
-      params: {
-        handle: riseConfig.brands_handle
-      },
-      query: riseQuery({
-        ...brands_query,
-        attributes: campaign_attributes
-      })
-    })
-
     return Promise.all([
-      featuredReq(),
-      Promise.resolve(), // onSaleReq(),
-      Promise.resolve(), // bestRatedReq(),
-      Promise.resolve(), // dealsOfTheWeekReq(),
-      Promise.resolve(), // popularCategoriesReq(),
-      Promise.resolve(), // hotNewArrivalsReq(),
-      Promise.resolve(), // hotBestSellersReq(),
-      Promise.resolve(), // trendingSellersReq(),
-      brandsReq()
+      featuredReq(session_uuid, token, featured_query),
+      onSaleReq(session_uuid, token, on_sale_query),
+      Promise.resolve(), // bestRatedReq(session_uuid, token, best_rated_query),
+      Promise.resolve(), // dealsOfTheWeekReq(session_uuid, token, deals_of_the_week_query),
+      Promise.resolve(), // popularCategoriesReq(session_uuid, token, popular_categories_query),
+      Promise.resolve(), // hotNewArrivalsReq(session_uuid, token, hot_new_arrivals_query),
+      hotBestSellersReq(session_uuid, token, hot_best_sellers_query),
+      Promise.resolve(), // trendingSellersReq(session_uuid, token, trending_sellers_query),
+      brandsReq(session_uuid, token, brands_query)
     ])
       .then(([
         featured_offers = {},
@@ -263,21 +265,25 @@
   import { goto, stores } from '@sapper/app'
 
   // COMPONENTS
-  import RecentlyViewed from './_components/RecentlyViewed.svelte'
-  import Brands from './_components/Brands.svelte'
-  import Newsletter from './_components/Newsletter.svelte'
-  import Reviews from './_components/Reviews.svelte'
-  import Trends from './_components/Trends.svelte'
-  import Adverts from './_components/Adverts.svelte'
-  import BestSellers from './_components/BestSellers.svelte'
-  import HotArrivals from './_components/HotArrivals.svelte'
-  import PopularCampaigns from './_components/PopularCampaigns.svelte'
-  import DealsOfTheWeek from './_components/DealsOfTheWeek.svelte'
-  import Characteristics from './_components/Characteristics.svelte'
-  import BannerOne from './_components/banners/BannerOne.svelte'
-  import BannerTwo from './_components/banners/BannerTwo.svelte'
 
 
+  // import Reviews from './_components/layout/Reviews.svelte'
+  // import Trends from './_components/layout/Trends.svelte'
+  // import Adverts from './_components/layout/Adverts.svelte'
+  // import HotArrivals from './_components/layout/HotArrivals.svelte'
+  // import PopularCampaigns from './_components/layout/PopularCampaigns.svelte'
+  // import DealsOfTheWeek from './_components/layout/DealsOfTheWeek.svelte'
+  // import Characteristics from './_components/layout/Characteristics.svelte'
+
+  import Newsletter from './_components/layout/Newsletter.svelte'
+  import Featured from './_components/layout/Featured.svelte'
+  import BestSellers from './_components/layout/BestSellers.svelte'
+  import OnSale from './_components/layout/OnSale.svelte'
+  import BannerOne from './_components/layout/banners/BannerOne.svelte'
+  import BannerTwo from './_components/layout/banners/BannerTwo.svelte'
+
+  import RecentlyViewed from './_components/layout/RecentlyViewed.svelte'
+  import Brands from './_components/layout/Brands.svelte'
 
   export let featured_query,
     featured_offers,
@@ -286,16 +292,16 @@
     featured_offers_limit,
 
     on_sale_query,
-    // on_sale_offers,
-    // on_sale_offers_total,
-    // on_sale_offers_offset,
-    // on_sale_offers_limit,
+    on_sale_offers,
+    on_sale_offers_total,
+    on_sale_offers_offset,
+    on_sale_offers_limit,
 
     best_rated_query,
-    // best_rated_offers,
-    // best_rated_offers_total,
-    // best_rated_offers_offset,
-    // best_rated_offers_limit,
+    best_rated_offers,
+    best_rated_offers_total,
+    best_rated_offers_offset,
+    best_rated_offers_limit,
 
     deals_of_the_week_query,
     deals_of_the_week_offers,
@@ -339,7 +345,7 @@
 
   // LOGIC
 
-  const { session } = stores()
+  const {session} = stores()
 
 </script>
 
@@ -348,31 +354,66 @@
 </style>
 
 <svelte:head>
-  <title>RiSE Template</title>
+  <title>{ brand.name }</title>
 </svelte:head>
 
-<!--<BannerOne></BannerOne>-->
+<BannerOne></BannerOne>
 
 <!--<Characteristics></Characteristics>-->
 
-<DealsOfTheWeek
-  {deals_of_the_week_query}
-  {deals_of_the_week_offers}
-  {deals_of_the_week_offers_limit}
-  {deals_of_the_week_offers_offset}
-  {deals_of_the_week_offers_total}
-
+<Featured
+  campaign={{
+    handle: riseConfig.featured_handle,
+    title: 'Featured'
+  }}
   {featured_query}
   {featured_offers}
   {featured_offers_limit}
   {featured_offers_offset}
   {featured_offers_total}
-
+></Featured>
+<OnSale
+  campaign={{
+    handle: riseConfig.on_sale_handle,
+    title: 'Latest on Sale'
+  }}
   {on_sale_query}
+  {on_sale_offers}
+  {on_sale_offers_limit}
+  {on_sale_offers_offset}
+  {on_sale_offers_total}
+></OnSale>
 
-  {best_rated_query}
+<!--<BannerTwo></BannerTwo>-->
+<BestSellers
+  campaign={{
+    handle: riseConfig.hot_best_sellers_handle,
+    title: 'Our Best Sellers'
+  }}
+  {hot_best_sellers_query}
+  {hot_best_sellers_offers}
+  {hot_best_sellers_offers_limit}
+  {hot_best_sellers_offers_offset}
+  {hot_best_sellers_offers_total}
+></BestSellers>
+<!--<DealsOfTheWeek-->
+<!--  {deals_of_the_week_query}-->
+<!--  {deals_of_the_week_offers}-->
+<!--  {deals_of_the_week_offers_limit}-->
+<!--  {deals_of_the_week_offers_offset}-->
+<!--  {deals_of_the_week_offers_total}-->
 
-></DealsOfTheWeek>
+<!--  {featured_query}-->
+<!--  {featured_offers}-->
+<!--  {featured_offers_limit}-->
+<!--  {featured_offers_offset}-->
+<!--  {featured_offers_total}-->
+
+<!--  {on_sale_query}-->
+
+<!--  {best_rated_query}-->
+
+<!--&gt;</DealsOfTheWeek>-->
 
 <!--<PopularCampaigns-->
 <!--  {popular_categories_query}-->
