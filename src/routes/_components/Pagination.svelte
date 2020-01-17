@@ -7,6 +7,43 @@
   export let total = 0, query = {}, query_names = { limit: 'limit', offset: 'offset' }
 
   // LOGIC
+
+  function getPageList(totalPages, page, maxLength) {
+    if (maxLength < 5) {
+      throw "maxLength must be at least 5"
+    }
+
+    function range(start, end) {
+      return Array.from(Array(end - start + 1), (_, i) => i + start);
+    }
+
+    var sideWidth = maxLength < 9 ? 1 : 2;
+    var leftWidth = (maxLength - sideWidth*2 - 3) >> 1;
+    var rightWidth = (maxLength - sideWidth*2 - 2) >> 1;
+    if (totalPages <= maxLength) {
+      // no breaks in list
+      return range(1, totalPages);
+    }
+    if (page <= maxLength - sideWidth - 1 - rightWidth) {
+      // no break on left of page
+      return range(1, maxLength-sideWidth-1)
+              .concat([0])
+              .concat(range(totalPages-sideWidth+1, totalPages));
+    }
+    if (page >= totalPages - sideWidth - 1 - rightWidth) {
+      // no break on right of page
+      return range(1, sideWidth)
+              .concat([0])
+              .concat(range(totalPages - sideWidth - 1 - rightWidth - leftWidth, totalPages));
+    }
+    // Breaks on both sides
+    return range(1, sideWidth)
+            .concat([0])
+            .concat(range(page - leftWidth, page + rightWidth))
+            .concat([0])
+            .concat(range(totalPages-sideWidth+1, totalPages));
+  }
+
   const getPages = function(totalPages) {
     let p = []
     for (let i = 0; i < totalPages; i++) {
@@ -35,10 +72,10 @@
 
   $: lastDisabled = (currentPage + 1 > totalPages) || totalPages === 0
 
-  $: indexesToShow = getIndexes(currentPage, pages)
+  $: pageList = getPageList(totalPages, currentPage, 10)
 
-  $: showFirstElipse = indexesToShow.pop() > 6
-  $: showLastElipse = indexesToShow.shift() < Math.max(totalPages - 7, 0)
+  // $: showFirstElipse = indexesToShow.pop() > 6
+  // $: showLastElipse = indexesToShow.shift() < Math.max(totalPages - 7, 0)
 
   const dispatch = createEventDispatcher()
 
@@ -159,25 +196,26 @@
     </a>
   </div>
 
-  <!--  { currentPage } {totalPages} { pages} {total} { offset} {limit} -->
   <ul class="page_nav d-flex flex-row">
-    {#if showFirstElipse }
-      <li class="page-item">
-        <a on:click={e=> goToPage(1)}>...</a>
+<!--    {#if showFirstElipse }-->
+<!--      <li class="page-item">-->
+<!--        <a on:click={e=> goToPage(1)}>...</a>-->
+<!--      </li>-->
+<!--    {/if}-->
+    {#each pageList as page}
+      <li class="page-item" class:active="{currentPage === (page)}">
+        {#if page === 0}
+        <span>...</span>
+        {:else}
+        <a on:click={e=> goToPage(page)}>{ page }</a>
+        {/if}
       </li>
-    {/if}
-    {#each pages as page}
-    <!--      {#if indexesToShow.includes(Math.max(page, 1)) }-->
-      <li class="page-item" class:active="{currentPage === (page + 1)}">
-        <a on:click={e=> goToPage(page + 1)}>{ page + 1 }</a>
-      </li>
-      <!--      {/if}-->
     {/each}
-    {#if showLastElipse }
-      <li class="page-item">
-        <a on:click={e=> goToPage(totalPages)}>...</a>
-      </li>
-    {/if}
+<!--    {#if showLastElipse }-->
+<!--      <li class="page-item">-->
+<!--        <a on:click={e=> goToPage(totalPages)}>...</a>-->
+<!--      </li>-->
+<!--    {/if}-->
   </ul>
 
   <div

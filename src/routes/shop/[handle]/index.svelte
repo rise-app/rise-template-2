@@ -325,7 +325,7 @@
   </div>
 </div>
 
-<!--<RecentlyViewed></RecentlyViewed>-->
+<RecentlyViewed></RecentlyViewed>
 
 <!--<Brands></Brands>-->
 

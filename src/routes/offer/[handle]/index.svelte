@@ -33,6 +33,21 @@
     }
   }
 
+  const crossSellsReq = async (session_uuid, token, handle, cross_sells_query) => {
+    if (handle) {
+      return rise.channelPublicOffer.listCrossSellsByHandle({}, {
+        session: session_uuid,
+        token: token,
+        params: {
+          handle: handle
+        },
+        query: riseQuery(cross_sells_query)
+      })
+    } else {
+      Promise.resolve()
+    }
+  }
+
   // the (optional) preload function takes a
   // `{ path, params, query }` object and turns it into
   // the data we need to render the page
@@ -41,15 +56,18 @@
 
     // Fixes deep nested objects
     let variants_query = riseQuery(pluckQuery(query, 'vq'))
+    let cross_sells_query = riseQuery(pluckQuery(query, 'cs'))
 
 
     return Promise.all([
       offerReq(session_uuid, token, handle),
-      variantsReq(session_uuid, token, handle, variants_query)
+      variantsReq(session_uuid, token, handle, variants_query),
+      Promise.resolve() // crossSellsReq(session_uuid, token, handle, cross_sells_query)
     ])
       .then(([
          offer = {},
-         variants = {}
+         variants = {},
+        cross_sells = {}
        ]) => {
         return {
           offer: offer.data,
@@ -59,6 +77,12 @@
           variants_total: variants.total,
           variants_offset: variants.offset,
           variants_limit: variants.limit,
+
+          cross_sells_query,
+          cross_sells: cross_sells.data,
+          cross_sells_total: cross_sells.total,
+          cross_sells_offset: cross_sells.offset,
+          cross_sells_limit: cross_sells.limit
         }
       })
       .catch(err => {
@@ -79,6 +103,7 @@
   import OfferForm from './_components/OfferForm.svelte'
   import Gallery from './_components/Gallery.svelte'
   import Header from './_components/Header.svelte'
+  import Related from '../../_components/layout/Related.svelte'
 
 
   // IMPORTS
@@ -88,7 +113,13 @@
     variants = [],
     variants_total = 0,
     variants_offset = 0,
-    variants_limit = 10
+    variants_limit = 10,
+
+    cross_sells_query = {},
+    cross_sells_offers = [],
+    cross_sells_offers_total = 0,
+    cross_sells_offers_offset = 0,
+    cross_sells_offers_limit = 10
 
 
   // LOGIC
@@ -108,8 +139,8 @@
 
   let inCart
   $: inCart = $session.cart
-      && $session.cart.items
-      && $session.cart.items.find(i => i.offer_uuid === offer.offer_uuid)
+          && $session.cart.items
+          && $session.cart.items.find(i => i.offer_uuid === offer.offer_uuid)
 
   async function addItemToCart(item) {
     // Disable Buttons
@@ -149,8 +180,7 @@
         // If this returned the new cart item(s), then redirect to the cart view
         if (response.data) {
           return goto('/cart')
-        }
-        else {
+        } else {
           return response
         }
       })
@@ -270,13 +300,28 @@
             </div>
           </TabPanel>
           <TabPanel>
-            <div class="mt-2 mb-2">
-              <div class="text-muted">
-                <h2>No Reviews Yet...</h2>
+            <div class="mt-5 mb-2">
+              <div class="text-center text-muted">
+                <h5>No Reviews Yet...</h5>
+                <p>
+                  Become a verified customer to leave a review!
+                </p>
               </div>
             </div>
           </TabPanel>
         </Tabs>
+      </div>
+    </div>
+    <div class="row mt-5">
+      <div class="col-12">
+        <Related
+          {offer}
+          {cross_sells_query}
+          {cross_sells_offers}
+          {cross_sells_offers_total}
+          {cross_sells_offers_offset}
+          {cross_sells_offers_limit}
+        ></Related>
       </div>
     </div>
   </div>

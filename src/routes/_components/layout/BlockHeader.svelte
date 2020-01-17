@@ -1,6 +1,7 @@
 <script>
   export let
-    campaign = {}
+    campaign = {},
+    showAll = true
 
 </script>
 <style type="text/scss">
@@ -29,11 +30,13 @@
       <h5>
         { campaign.title || 'Featured'}
       </h5>
+      {#if showAll}
       <a href="/shop/{campaign.collection_handle || campaign.handle}">
         Browse All
         &nbsp;
         <i class="fa fa-chevron-right"></i>
       </a>
+      {/if}
     </div>
   </div>
 </div>
