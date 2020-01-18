@@ -1,4 +1,5 @@
 <script>
+  import Campaign from './Campaign.svelte'
   export let
     campaign = {},
     featured_campaigns_query,
@@ -21,7 +22,7 @@
 </script>
 
 <style type="text/scss">
-  @import "../../../theme/variables";
+  @import "../../../../theme/variables";
 
   .carousel-item {
     height: 580px;
@@ -98,23 +99,8 @@
         </ol>
         <div class="carousel-inner">
           {#each featured_campaigns as slide, i (slide.collection_uuid)}
-            <div class="carousel-item">
-              <div class="title">
-                { slide.title }
-              </div>
-              <div class="buttons">
-                <a
-                  href="/shop/{slide.collection_handle || slide.handle}"
-                  class="btn btn-primary"
-                >
-                  Shop Now
-                </a>
-              </div>
-              <img
-                class="d-block w-100"
-                src="{slide.image_primary.src}"
-                alt="{slide.title}"
-              >
+            <div class="carousel-item active">
+              <Campaign campaign={slide} />
             </div>
           {:else}
             <div class="carousel-item active">
@@ -147,32 +133,12 @@
       <div class="col-sm-12 col-md-4 mb-5">
         <div class="adjacent adjacent--one">
           {#if campaign_adjacent_one}
-            <div class="title">
-              { campaign_adjacent_one.title }
-            </div>
-            <div class="buttons">
-              <a
-                href="/shop/{campaign_adjacent_one.collection_handle || campaign_adjacent_one.handle}"
-                class="btn btn-primary"
-              >
-                Shop Now
-              </a>
-            </div>
+            <Campaign campaign={campaign_adjacent_one} />
           {/if}
         </div>
         <div class="adjacent adjacent--two">
           {#if campaign_adjacent_two}
-            <div class="title">
-              { campaign_adjacent_one.title }
-            </div>
-            <div class="buttons">
-              <a
-                href="/shop/{campaign_adjacent_one.collection_handle || campaign_adjacent_one.handle}"
-              class="btn btn-primary"
-              >
-                Shop Now
-              </a>
-            </div>
+            <Campaign campaign={campaign_adjacent_two} />
           {/if}
         </div>
       </div>

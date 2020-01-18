@@ -4,6 +4,7 @@ import compression from 'compression'
 import bodyParser from 'body-parser'
 import session from 'express-session'
 import sessionFileStore from 'session-file-store'
+import cookieSession from 'cookie-session'
 import * as sapper from '@sapper/server'
 
 import uuidv4 from 'uuid/v4'
@@ -59,6 +60,11 @@ polka() // You can also use Express
       // }
     })
   )
+  // .use(cookieSession({
+  //   name: 'rise_session',
+  //   // Cookie Options
+  //   maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  // }))
   .use(function(req, res, next) {
     // console.log("ENV NON_WWW", process.env.NON_WWW, req.host)
     if (process.env.NON_WWW && req.host.match(/^www/) !== null) {

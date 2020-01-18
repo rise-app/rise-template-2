@@ -15,10 +15,11 @@
   "dependencies": {
     "@fabrix/regexdot": "^1.0.1",
     "@fortawesome/free-solid-svg-icons": "^5.11.2",
-    "@rise/sdk-js": "^1.0.0-alpha.53",
+    "@rise/sdk-js": "^1.0.0-alpha.55",
     "body-parser": "^1.18.3",
     "bootstrap": "^4.3.1",
     "compression": "^1.7.1",
+    "cookie-session": "^1.4.0",
     "cypress": "^3.4.1",
     "dropzone": "^5.5.1",
     "express-session": "^1.16.2",

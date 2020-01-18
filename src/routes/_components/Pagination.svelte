@@ -203,7 +203,7 @@
 <!--      </li>-->
 <!--    {/if}-->
     {#each pageList as page}
-      <li class="page-item" class:active="{currentPage === (page)}">
+      <li class="page-item"  class:active="{currentPage === (page)}">
         {#if page === 0}
         <span>...</span>
         {:else}

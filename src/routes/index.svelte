@@ -305,7 +305,7 @@
 
   import RecentlyViewed from './_components/layout/RecentlyViewed.svelte'
   import Brands from './_components/layout/Brands.svelte'
-  import CampaignGallery from './_components/layout/CampaignGallery.svelte'
+  import { CampaignGallery } from './_components/layout/CampaignGallery'
 
   export let
     featured_campaigns_query,
