@@ -228,7 +228,7 @@
         </div>
         <div class="product_price mb-2">
           <h3>
-            {#if offer.price_compare_at !== offer.total_price_calculated}
+            {#if offer.price_compare_at > offer.total_price_calculated}
               <strike>
                 <Currency price="{ offer.price_compare_at }" currency="{offer.currency}" />
               </strike>

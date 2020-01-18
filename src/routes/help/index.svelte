@@ -1,4 +1,5 @@
 <script context="module">
+  import { brand } from 'config'
   export function preload({ params, query }) {
     return this.fetch(`help.json`)
       .then(r => r.json())
@@ -13,14 +14,14 @@
 </script>
 
 <svelte:head>
-  <title>Help • rise</title>
+  <title>Help • { brand.name }</title>
 </svelte:head>
 
 <div class="site-page">
   <div class="container page">
     <div class="row justify-content-center mt-5">
       <div class="col-sm-12 col-md-9">
-        <h1>RiSE Help</h1>
+        <h1>{ brand.name } Help</h1>
 
         <ul>
           {#each posts as post}
@@ -29,7 +30,9 @@
 				the user hovers over the link or taps it, instead of
 				waiting for the 'click' event -->
             <li>
-              <a rel="prefetch" href="help/{post.slug}">{post.title}</a>
+              <a rel="prefetch" href="help/{post.slug}">
+                {post.title}
+              </a>
             </li>
           {/each}
         </ul>

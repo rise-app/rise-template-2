@@ -227,7 +227,7 @@
       use:bindClass="{{ form: registerForm, name: 'accepts_policy', invalid: 'is-invalid' }}"
     >
     <label class="form-check-label" for="terms_and_conditions">
-      I agree to the Cookie and Privacy Policy.
+      I agree to the <a rel="prefetch" href="/help/privacy">Cookie and Privacy Policy</a>.
     </label>
   </fieldset>
 

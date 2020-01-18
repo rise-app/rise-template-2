@@ -86,7 +86,7 @@
   {/if}
 
   <button
-     class="btn btn-lg btn-primary pull-xs-right"
+     class="btn btn-lg btn-primary w-100"
      type="submit"
      disabled={!$loginForm.dirty || ($loginForm.dirty && !$loginForm.valid) || inProgress || !!preloading}
   >

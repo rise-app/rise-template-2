@@ -780,7 +780,7 @@
         <div class="blog_posts d-flex flex-row align-items-start justify-content-between">
 
           {#each posts as post}
-            <div class="blog_post">
+            <div class="blog_post d-block position-relative">
               <!-- we're using the non-standard `rel=prefetch` attribute to
             tell Sapper to load the data for the page as soon as
             the user hovers over the link or taps it, instead of

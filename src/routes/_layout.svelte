@@ -8,6 +8,10 @@
     return get(`auth/session/channel`, {}, token, session_uuid)
   }
 
+  const helpReq = async (session_uuid, token) => {
+    return get(`help.json`, {}, token, session_uuid)
+  }
+
   const campaign_attributes = [
     'collection_uuid',
     'title',
@@ -40,12 +44,14 @@
     // .then((channel) => { })
     return Promise.all([
       channelReq(session_uuid, token),
-      primaryNavReq(session_uuid, token, primary_navigation_campaigns_query)
+      primaryNavReq(session_uuid, token, primary_navigation_campaigns_query),
+      helpReq(session_uuid, token)
     ])
       .then(([
-          channel = {},
-          nav_campaigns = {}
-        ]) => {
+        channel = {},
+        nav_campaigns = {},
+        help = []
+      ]) => {
         return {
           // Config
           channel,
@@ -58,7 +64,9 @@
           primary_navigation_campaigns: nav_campaigns.data,
           primary_navigation_campaigns_total: nav_campaigns.total,
           primary_navigation_campaigns_offset: nav_campaigns.offset,
-          primary_navigation_campaigns_limit: nav_campaigns.limit
+          primary_navigation_campaigns_limit: nav_campaigns.limit,
+
+          help
         }
       })
       .catch(err => {
@@ -90,7 +98,8 @@
     primary_navigation_campaigns = [],
     primary_navigation_campaigns_total,
     primary_navigation_campaigns_offset,
-    primary_navigation_campaigns_limit
+    primary_navigation_campaigns_limit,
+    help = []
 
 
   // INCLUDES
@@ -286,5 +295,6 @@
     customer={$session.customer}
     cart={$session.cart}
     {primary_navigation_campaigns}
+    {help}
   ></Footer>
 </div>

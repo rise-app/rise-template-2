@@ -221,7 +221,7 @@
   </div>
   <div class="offer_content">
     <div class="offer_price">
-      {#if offer.price_compare_at !== offer.total_price_calculated}
+      {#if offer.price_compare_at > offer.total_price_calculated}
       <strike>
         <Currency price="{ offer.price_compare_at }" currency="{offer.currency}" />
       </strike>

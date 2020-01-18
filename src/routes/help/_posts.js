@@ -25,7 +25,7 @@ const posts = [
 		`,
   },
   {
-    title: 'Returns',
+    title: 'Returns & Exchanges',
     slug: 'returns',
     html: `
         <p>Returns</p>
@@ -36,6 +36,13 @@ const posts = [
     slug: 'support',
     html: `
         <p>Product Support</p>
+		`,
+  },
+  {
+    title: 'Privacy Policy',
+    slug: 'privacy',
+    html: `
+        <p>Privacy Policy</p>
 		`,
   },
 ]

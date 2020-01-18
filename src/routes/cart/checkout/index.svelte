@@ -433,34 +433,40 @@
           <div class="list-group">
           {#if isLoggedIn}
             <div class="list-group-item">
-              <h5 class="text-muted">Account Setup</h5>
+              <h4 class="text-muted">
+                Account Setup
+              </h4>
               <h3>{ $session.user.email }</h3>
               <div>Not you? <a href="/login">Click Here</a></div>
             </div>
           {:else}
             <div class="row">
+
               <div class="col-sm-12 col-md-6">
                 <div class="list-group-item">
-                  <div class="text-muted">Setup an Account</div>
-                  <RegisterForm
-                    value={ registerFormValue }
-                    inProgress={ inProgress }
-                    preloading="{ $preloading }"
-                    on:register={e => register(e.detail)}
-                    errors={errors}
-                  />
-                </div>
-              </div>
-              <div class="col-sm-12 col-md-6">
-                <div class="list-group-item">
-                  <div class="text-muted">
-                    Log into an Account
-                  </div>
+                  <h4 class="text-muted mt-2 mb-4">
+                    Returning Customer
+                  </h4>
                   <LoginForm
                     value={ registerFormValue }
                     inProgress={ inProgress }
                     preloading="{ $preloading }"
                     on:login={e => login(e.detail)}
+                    errors={errors}
+                  />
+                </div>
+              </div>
+
+              <div class="col-sm-12 col-md-6">
+                <div class="list-group-item">
+                  <h4 class="text-muted mt-2 mb-4">
+                    New Customer
+                  </h4>
+                  <RegisterForm
+                    value={ registerFormValue }
+                    inProgress={ inProgress }
+                    preloading="{ $preloading }"
+                    on:register={e => register(e.detail)}
                     errors={errors}
                   />
                 </div>

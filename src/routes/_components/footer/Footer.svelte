@@ -5,7 +5,8 @@
     user,
     customer,
     cart,
-    primary_navigation_campaigns = []
+    primary_navigation_campaigns = [],
+    help = []
 
 
   // LOGIC
@@ -215,14 +216,30 @@
           </div>
           <div class="footer_social">
             <ul>
-              <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
-              <li><a href="#"><i class="fab fa-instagram"></i></a></li>
-              <li><a href="#"><i class="fab fa-twitter"></i></a></li>
-              <li><a href="#"><i class="fab fa-youtube"></i></a></li>
-              <li><a href="#"><i class="fab fa-google"></i></a></li>
-              <li><a href="#"><i class="fab fa-vimeo-v"></i></a></li>
-              <li><a href="#"><i class="fab fa-github"></i></a></li>
-              <li><a href="#"><i class="fab fa-snapchat"></i></a></li>
+              <li>
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+              </li>
+              <li>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+              </li>
+              <li>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+              </li>
+              <li>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+              </li>
+              <li>
+                <a href="#"><i class="fab fa-google"></i></a>
+              </li>
+              <li>
+                <a href="#"><i class="fab fa-vimeo-v"></i></a>
+              </li>
+              <li>
+                <a href="#"><i class="fab fa-github"></i></a>
+              </li>
+              <li>
+                <a href="#"><i class="fab fa-snapchat"></i></a>
+              </li>
             </ul>
           </div>
         </div>
@@ -234,16 +251,14 @@
           <ul class="footer_list">
             {#each primary_navigation_campaigns as campaign, i (campaign.collection_uuid)}
             <li>
-              <a href="/shop/{campaign.collection_handle || campaign.handle }">
+              <a
+                rel="prefetch"
+                href="/shop/{campaign.collection_handle || campaign.handle }"
+              >
                 { campaign.title }
               </a>
             </li>
             {/each}
-<!--            <li><a href="#">Computers & Laptops</a></li>-->
-<!--            <li><a href="#">Cameras & Photos</a></li>-->
-<!--            <li><a href="#">Hardware</a></li>-->
-<!--            <li><a href="#">Smartphones & Tablets</a></li>-->
-<!--            <li><a href="#">TV & Audio</a></li>-->
           </ul>
 <!--          <div class="footer_subtitle">Gadgets</div>-->
 <!--          <ul class="footer_list">-->
@@ -270,19 +285,31 @@
           <div class="footer_title">Customer Care</div>
           <ul class="footer_list">
             {#if isLoggedIn }
-            <li><a href="/account">My Account</a></li>
+              <li>
+                <a href="/account">My Account</a>
+              </li>
             {/if}
             {#if isLoggedIn }
-            <li><a href="#">Influencer Area</a></li>
+              <li>
+                <a href="#">Influencer Area</a>
+              </li>
+              <li>
+                <a href="/account/orders">Order Tracking</a>
+              </li>
             {/if}
-            {#if isLoggedIn }
-            <li><a href="/account/orders">Order Tracking</a></li>
-            {/if}
-            <li><a href="/wishlist">Wish List</a></li>
-            <li><a href="/help/service">Customer Services</a></li>
-            <li><a href="/help/returns">Returns / Exchange</a></li>
-            <li><a href="/help/faq">FAQs</a></li>
-            <li><a href="/help/support">Product Support</a></li>
+            <li>
+              <a href="/wishlist">Wish List</a>
+            </li>
+            {#each help as post}
+              <li>
+                <a
+                  rel="prefetch"
+                  href="/help/{post.slug}"
+                >
+                  { post.title }
+                </a>
+              </li>
+            {/each}
           </ul>
         </div>
       </div>
