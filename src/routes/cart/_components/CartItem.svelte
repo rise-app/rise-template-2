@@ -1,10 +1,24 @@
 <script>
+  // MODULES
+
+  import {createEventDispatcher} from 'svelte'
+
+  // COMPONENTS
   import Currency from '../../_components/Currency.svelte'
   import ImageLoader from '../../_components/ImageLoader.svelte'
 
-  export let item = {}
+  // IMPORTS
+  export let item = {}, btnsDisabled = false
+
+  // LOGIC
+  const dispatch = createEventDispatcher()
 
   let image = item.image_primary ? item.image_primary : {}
+
+
+  function remove() {
+    dispatch('remove', item)
+  }
 </script>
 
 <style type="text/scss">
@@ -76,6 +90,10 @@
   {
     text-align: right;
   }
+  .cart_item_actions
+  {
+    text-align: right;
+  }
 </style>
 
 
@@ -129,6 +147,19 @@
           currency={item.currency}
         />
       </div>
+    </div>
+    <div class="cart_item_actions cart_info_col">
+      <div class="cart_item_title">
+        &nbsp;
+      </div>
+      <button
+        class="btn btn-outline-danger"
+        on:click={remove}
+        aria-label="remove item"
+        disabled="{btnsDisabled}"
+      >
+        <i class="fa fa-trash"></i>
+      </button>
     </div>
   </div>
 </div>

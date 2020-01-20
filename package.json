@@ -15,7 +15,7 @@
   "dependencies": {
     "@fabrix/regexdot": "^1.0.1",
     "@fortawesome/free-solid-svg-icons": "^5.11.2",
-    "@rise/sdk-js": "^1.0.0-alpha.55",
+    "@rise/sdk-js": "^1.0.0-alpha.56",
     "body-parser": "^1.18.3",
     "bootstrap": "^4.3.1",
     "compression": "^1.7.1",

@@ -33,18 +33,18 @@
     }
   }
 
-  const crossSellsReq = async (session_uuid, token, handle, cross_sells_query) => {
-    if (handle) {
-      return rise.channelPublicOffer.listCrossSellsByHandle({}, {
+  const crossSellsReq = async (session_uuid, token, offer_uuid, cross_sells_query) => {
+    if (offer_uuid) {
+      return rise.channelPublicOffer.listCrossSells({}, {
         session: session_uuid,
         token: token,
         params: {
-          handle: handle
+          offer_uuid: offer_uuid
         },
         query: riseQuery(cross_sells_query)
       })
     } else {
-      Promise.resolve()
+      return Promise.resolve({})
     }
   }
 
@@ -71,6 +71,7 @@
        ]) => {
         return {
           offer: offer.data,
+          offer_uuid: offer.data.offer_uuid,
 
           variants_query,
           variants: variants.data,
@@ -94,6 +95,7 @@
 
 <script>
   // MODULES
+  import { onMount } from 'svelte'
   import { goto, stores } from '@sapper/app'
   import { post } from 'utils'
 
@@ -109,17 +111,25 @@
   // IMPORTS
   export let
     offer = {},
+    offer_uuid,
+
     variants_query = {},
     variants = [],
+    variants_loading = false,
     variants_total = 0,
     variants_offset = 0,
     variants_limit = 10,
+    variants_errors = null,
+    variants_sort = [['position', 'ASC']],
 
     cross_sells_query = {},
-    cross_sells_offers = [],
-    cross_sells_offers_total = 0,
-    cross_sells_offers_offset = 0,
-    cross_sells_offers_limit = 10
+    cross_sells_loading = false,
+    cross_sells = [],
+    cross_sells_errors = null,
+    cross_sells_total = 0,
+    cross_sells_offset = 0,
+    cross_sells_limit = 10,
+    cross_sells_sort = [['position', 'ASC']]
 
 
   // LOGIC
@@ -128,7 +138,7 @@
   let errors, inProgress = false
 
   let formValue = {
-    offer_uuid: offer.offer_uuid,
+    offer_uuid: offer_uuid,
     // variant_uuid
     quantity: 1
   }
@@ -139,8 +149,8 @@
 
   let inCart
   $: inCart = $session.cart
-          && $session.cart.items
-          && $session.cart.items.find(i => i.offer_uuid === offer.offer_uuid)
+    && $session.cart.items
+    && $session.cart.items.find(i => i.offer_uuid === offer_uuid)
 
   async function addItemToCart(item) {
     // Disable Buttons
@@ -179,7 +189,7 @@
 
         // If this returned the new cart item(s), then redirect to the cart view
         if (response.data) {
-          return goto('/cart')
+          return goto(`/cart?offer_uuid=${offer_uuid}`)
         } else {
           return response
         }
@@ -191,6 +201,36 @@
         return err
       })
   }
+
+  async function listCrossSells() {
+    cross_sells_loading = true
+    return crossSellsReq(
+      $session.session_uuid,
+      $session.token,
+      offer_uuid,
+      cross_sells_query
+    )
+    .then(res => {
+      cross_sells_loading = false
+      cross_sells = res.data
+      cross_sells_limit = res.limit
+      cross_sells_offset = res.offset
+      cross_sells_total = res.total
+      cross_sells_sort = res.sort
+
+      return res
+    })
+    .catch(err => {
+      cross_sells_loading = false
+      cross_sells_errors = err
+    })
+  }
+
+  onMount(async () => {
+    return Promise.all([
+      listCrossSells()
+    ])
+  })
 
 </script>
 
@@ -317,10 +357,12 @@
         <Related
           {offer}
           {cross_sells_query}
-          {cross_sells_offers}
-          {cross_sells_offers_total}
-          {cross_sells_offers_offset}
-          {cross_sells_offers_limit}
+          {cross_sells_loading}
+          {cross_sells}
+          {cross_sells_total}
+          {cross_sells_offset}
+          {cross_sells_limit}
+          {cross_sells_errors}
         ></Related>
       </div>
     </div>

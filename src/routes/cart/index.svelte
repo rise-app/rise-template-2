@@ -2,14 +2,58 @@
   import { rise } from 'sdk'
   import { riseQuery, pluckQuery } from 'query'
   import { rise as riseConfig, brand } from 'config'
-  import { get, put, post } from 'utils'
+  import { get, put, post, del } from 'utils'
 
-  const getCartReq = async (session_uuid, token) => {
+  const cartReq = async (session_uuid, token) => {
     return get(`auth/session/cart`, {}, token, session_uuid)
   }
 
-  const listItemsReq = async (session_uuid, token) => {
+  const itemsReq = async (session_uuid, token) => {
     return get(`auth/session/cart/items`, {}, token, session_uuid)
+  }
+
+  const addItemReq = async (session_uuid, token, body) => {
+    return put(`auth/session/cart/items`, body, {}, token, session_uuid)
+  }
+
+  const updateItemReq = async (session_uuid, token, item_uuid, body) => {
+    return put(`auth/session/cart/items/${item_uuid}`, body, {}, token, session_uuid)
+  }
+
+  const removeItemReq = async (session_uuid, token, item_uuid) => {
+    return del(`auth/session/cart/items/${item_uuid}`, {}, {}, token, session_uuid)
+  }
+
+  const upSellsReq = async (session_uuid, token, offer_uuid, up_sells_query) => {
+    if (offer_uuid) {
+      return rise.channelPublicOffer.listUpSells({}, {
+        session: session_uuid,
+        token: token,
+        params: {
+          offer_uuid: offer_uuid
+        },
+        query: riseQuery(up_sells_query)
+      })
+    }
+    else {
+      return Promise.resolve({})
+    }
+  }
+
+  const downSellsReq = async (session_uuid, token, offer_uuid, down_sells_query) => {
+    if (offer_uuid) {
+      return rise.channelPublicOffer.listDownSells({}, {
+        session: session_uuid,
+        token: token,
+        params: {
+          offer_uuid: offer_uuid
+        },
+        query: riseQuery(down_sells_query)
+      })
+    }
+    else {
+      return Promise.resolve({})
+    }
   }
 
   // the (optional) preload function takes a
@@ -21,22 +65,20 @@
     // Query for Cart Items
     let items_query = riseQuery(pluckQuery(query, 'vq'))
 
+    const {offer_uuid} = query
 
 
     return Promise.all([
-      Promise.resolve(), // getCartReq(session_uuid, token),
-      listItemsReq(session_uuid, token)
+      Promise.resolve(), // cartReq(session_uuid, token),
+      itemsReq(session_uuid, token)
     ])
       .then(([
          cart = {},
          items = {}
        ]) => {
-        console.log('BRK session items', cart)
         return {
 
           session_uuid: items.session || session_uuid,
-
-          // cart: cart.data,
 
           cart: items.cart,
           items_query,
@@ -45,6 +87,8 @@
           items_total: items.total,
           items_offset: items.offset,
           items_limit: items.limit,
+
+          offer_uuid
         }
       })
       .catch(err => {
@@ -62,19 +106,71 @@
   // COMPONENTS
   import Currency from '../_components/Currency'
   import CartItem from './_components/CartItem.svelte'
+  import Dialog, { Title, Content, Actions } from '@smui/dialog'
+  import OfferItem from '../_components/OfferItem/OfferItem.svelte'
+
 
   // IMPORTS
-  export let session_uuid, cart = {}, items = []
+  export let
+    session_uuid,
+    cart = {},
+    cart_loading = false,
+    cart_errors = null,
+
+    items = [],
+    items_query = {},
+    items_loading = false,
+    items_errors = null,
+    items_total = 0,
+    items_offset = 0,
+    items_limit = 10,
+    items_sort = [['created_at', 'DESC']],
+
+    up_sells_query = {},
+    up_sells_loading = false,
+    up_sells = [],
+    up_sells_errors = null,
+    up_sells_total = 0,
+    up_sells_offset = 0,
+    up_sells_limit = 10,
+    up_sells_sort = [['position', 'ASC']],
+
+    down_sells_query = {},
+    down_sells_loading = false,
+    down_sells = [],
+    down_sells_errors = null,
+    down_sells_total = 0,
+    down_sells_offset = 0,
+    down_sells_limit = 10,
+    down_sells_sort = [['position', 'ASC']],
+
+    offer_uuid
 
   console.log('brk ', cart, items)
 
   // INCLUDES
-  const { preloading, page, session } = stores()
+  const {preloading, page, session} = stores()
 
   // LOGIC
 
-  async function getCartReq() {
-    return get(`auth/session/cart`, {}, $session.token, $session.session_uuid)
+  /************************
+   * DIALOGS
+   ************************/
+  let dialogUpSell, dialogDownSell
+
+  /*******************************
+   * DIALOG HANDLERS
+   *******************************/
+  function closeHandler(event) {
+    console.log('closed', event)
+  }
+
+  /*******************************
+   * REQUESTS
+   *******************************/
+  async function getCart() {
+    cart_loading = true
+    return cartReq($session.token, $session.session_uuid)
       .then(response => {
         const sessionValues = {
           ...$session
@@ -85,12 +181,23 @@
 
         session.set(sessionValues)
 
+        cart = response.data
+        cart_loading = false
+
         return response
       })
+    .catch(err => {
+      cart_loading = false
+      cart_errors = err
+      return
+    })
   }
 
-  async function getCartItemsReq() {
-    return get(`auth/session/cart/items`, {}, $session.token, $session.session_uuid)
+  async function listItems() {
+    cart_loading = true
+    items_loading = true
+
+    return itemsReq($session.token, $session.session_uuid)
       .then(response => {
 
         console.log('brk response 2!', response)
@@ -108,10 +215,145 @@
 
         session.set(sessionValues)
 
+        items = response.data
+        cart_loading = false
+        items_loading = false
+
         return response
+      })
+      .catch(err => {
+        cart_loading = false
+        items_loading = false
+        items_errors = err
+        return
       })
   }
 
+  async function removeItem(item_uuid) {
+    cart_loading = true
+    items_loading = true
+
+    return removeItemReq($session.session_uuid, $session.token, item_uuid)
+      .then(response => {
+
+        console.log('REMOVE', response)
+
+        const sessionValues = {
+          ...$session
+        }
+        if (response.cart) {
+          sessionValues.cart = response.cart
+        }
+
+        // if (response.data) {
+        //   sessionValues.cart.items = response.data
+        // }
+
+        session.set(sessionValues)
+
+        return checkDownSells(response.data.offer_uuid)
+          .then(() => {
+            // items = response.data
+            cart_loading = false
+            items_loading = false
+
+            return response
+          })
+      })
+      .catch(err => {
+        cart_loading = false
+        items_loading = false
+        items_errors = err
+        return
+      })
+  }
+
+  async function listUpSells(_offer_uuid) {
+    up_sells_loading = true
+    return upSellsReq(
+      $session.session_uuid,
+      $session.token,
+      _offer_uuid,
+      up_sells_query
+    )
+    .then(res => {
+      up_sells_loading = false
+      up_sells = res.data
+      up_sells_limit = res.limit
+      up_sells_offset = res.offset
+      up_sells_total = res.total
+      up_sells_sort = res.sort
+
+      return res
+    })
+    .catch(err => {
+      up_sells_loading = false
+      up_sells_errors = err
+
+      return
+    })
+  }
+
+  async function listDownSells(_offer_uuid) {
+    down_sells_loading = true
+    return downSellsReq(
+      $session.session_uuid,
+      $session.token,
+      _offer_uuid,
+      down_sells_query
+    )
+      .then(res => {
+        down_sells_loading = false
+        down_sells = res.data
+        down_sells_limit = res.limit
+        down_sells_offset = res.offset
+        down_sells_total = res.total
+        down_sells_sort = res.sort
+
+        return res
+      })
+      .catch(err => {
+        down_sells_loading = false
+        down_sells_errors = err
+
+        return
+      })
+  }
+
+  async function checkUpSells() {
+    if (offer_uuid) {
+      return listUpSells(offer_uuid)
+        .then(res => {
+          console.log('BRK up sell', res)
+          if (res && res.data && res.data.length > 0) {
+            dialogUpSell.open()
+          }
+          return res
+        })
+    }
+    else {
+      return Promise.resolve()
+    }
+  }
+
+  async function checkDownSells(_offer_uuid) {
+    if (_offer_uuid) {
+      return listDownSells(_offer_uuid)
+        .then(res => {
+          console.log('BRK down sell', res)
+          if (res && res.data && res.data.length > 0) {
+            dialogDownSell.open()
+          }
+          return res
+        })
+    } else {
+      return Promise.resolve()
+    }
+  }
+
+  /*******************************
+   * STORE HANDLERS
+   *******************************/
   function updateStore() {
     console.log('BRK updating store', cart, items)
 
@@ -137,7 +379,14 @@
 
   let total_items, btnsDisabled
   $: total_items = cart ? cart.total_items : 0
-  $: btnsDisabled = !total_items
+  $: btnsDisabled = !total_items || cart_loading || items_loading
+
+
+  onMount((async => {
+    return Promise.all([
+      checkUpSells()
+    ])
+  }))
 
 </script>
 <style type="text/scss">
@@ -290,6 +539,9 @@
     cursor: pointer;
     vertical-align: top;
   }
+  .x-sells {
+    min-width: 350px;
+  }
 </style>
 
 <svelte:head>
@@ -307,7 +559,11 @@
           <div class="cart_items">
             <div class="list-group cart_list">
               {#each items as item, i (item.item_uuid)}
-                <CartItem {item} />
+                <CartItem
+                  {item}
+                  {btnsDisabled}
+                  on:remove={e=> removeItem(item.item_uuid)}
+                />
               {:else}
                 <div class="list-group-item">
                   <div class="text-center mt-5">
@@ -316,31 +572,6 @@
                   </div>
                 </div>
               {/each}
-<!--              <li class="cart_item clearfix">-->
-<!--                <div class="cart_item_image"><img src="images/shopping_cart.jpg" alt=""></div>-->
-<!--                <div class="cart_item_info d-flex flex-md-row flex-column justify-content-between">-->
-<!--                  <div class="cart_item_name cart_info_col">-->
-<!--                    <div class="cart_item_title">Name</div>-->
-<!--                    <div class="cart_item_text">MacBook Air 13</div>-->
-<!--                  </div>-->
-<!--                  <div class="cart_item_color cart_info_col">-->
-<!--                    <div class="cart_item_title">Color</div>-->
-<!--                    <div class="cart_item_text"><span style="background-color:#999999;"></span>Silver</div>-->
-<!--                  </div>-->
-<!--                  <div class="cart_item_quantity cart_info_col">-->
-<!--                    <div class="cart_item_title">Quantity</div>-->
-<!--                    <div class="cart_item_text">1</div>-->
-<!--                  </div>-->
-<!--                  <div class="cart_item_price cart_info_col">-->
-<!--                    <div class="cart_item_title">Price</div>-->
-<!--                    <div class="cart_item_text">$2000</div>-->
-<!--                  </div>-->
-<!--                  <div class="cart_item_total cart_info_col">-->
-<!--                    <div class="cart_item_title">Total</div>-->
-<!--                    <div class="cart_item_text">$2000</div>-->
-<!--                  </div>-->
-<!--                </div>-->
-<!--              </li>-->
             </div>
           </div>
 
@@ -402,3 +633,44 @@
     </div>
   </div>
 </div>
+
+
+<Dialog
+  bind:this={dialogUpSell}
+  aria-labelledby="dialog-up-sell-title"
+  aria-describedby="dialog-up-sell-content"
+  on:MDCDialog:closed={closeHandler}
+>
+  <Title id="dialog-up-sell-title">
+    You might also be interested in...
+  </Title>
+  <Content id="dialog-up-sell-content">
+    <div class="x-sells d-flex">
+      {#each up_sells as offer, i (offer.offer_uuid)}
+        <div class="flex-column">
+          <OfferItem {offer} />
+        </div>
+      {/each}
+    </div>
+  </Content>
+</Dialog>
+
+<Dialog
+  bind:this={dialogDownSell}
+  aria-labelledby="dialog-down-sell-title"
+  aria-describedby="dialog-down-sell-content"
+  on:MDCDialog:closed={closeHandler}
+>
+  <Title id="dialog-down-sell-title">
+    You might like this instead...
+  </Title>
+  <Content id="dialog-down-sell-content">
+    <div class="x-sells d-flex">
+      {#each down_sells as offer, i (offer.offer_uuid)}
+        <div class="flex-column">
+          <OfferItem {offer} />
+        </div>
+      {/each}
+    </div>
+  </Content>
+</Dialog>

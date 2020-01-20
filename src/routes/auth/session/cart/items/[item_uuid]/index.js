@@ -133,6 +133,8 @@ export function del(req, res) {
     }
   })
     .then(response => {
+      console.log('BRK server res', response)
+
       if (response.session) {
         req.session.session_uuid = response.session
       }
