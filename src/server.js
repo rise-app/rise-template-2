@@ -70,19 +70,31 @@ polka() // You can also use Express
     if (process.env.NON_WWW && req.host.match(/^www/) !== null) {
       if (process.env.FORCE_HTTPS) {
         if (req.headers['x-forwarded-proto'] !== 'https') {
-          return res.redirect('https://' + req.host.replace(/^www\./, '') + req.url)
+          res.writeHead(301, {
+            Location: 'https://' + req.headers.host.replace(/^www\./, '') + req.url
+          })
+          return res.end();
         }
-      } else {
-        return res.redirect('http://' + req.host.replace(/^www\./, '') + req.url)
+      }
+      else {
+        res.writeHead(301, {
+          Location: '//' + req.headers.host.replace(/^www\./, '') + req.url
+        })
+        return res.end();
+        // return res.redirect('http://' + req.host.replace(/^www\./, '') + req.url)
       }
     }
     next()
   })
   .use(function(req, res, next) {
+    console.log('BRK req.host', req.headers.host)
     // console.log("ENV FORCE_HTTPS", process.env.FORCE_HTTPS, req.headers['x-forwarded-proto'])
     if (process.env.FORCE_HTTPS) {
       if (req.headers['x-forwarded-proto'] !== 'https') {
-        return res.redirect('https://' + req.host + req.url)
+        res.writeHead(301, {
+          Location: 'https://' + req.headers.host + req.url
+        })
+        return res.end();
       }
     }
     next()

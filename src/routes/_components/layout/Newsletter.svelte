@@ -4,7 +4,11 @@
   import { form, bindClass } from 'svelte-forms'
 
   // IMPORTS
-  export let value = {}, inProgress = false, preloading = false
+  export let
+    value = {},
+    inProgress = false,
+    preloading = false,
+    isSubscribed = false
 
   // LOGIC
 
@@ -40,7 +44,7 @@
   .newsletter
   {
     width: 100%;
-    background: #fafafa;
+    background: $gray-100;
     padding-top: 60px;
     padding-bottom: 60px;
     box-shadow: 0px 5px 20px rgba(0,0,0,0.1);
@@ -68,7 +72,7 @@
   .newsletter_title
   {
     font-size: 18px;
-    color: #000000;
+    color: $black;
   }
   .newsletter_text p:last-child
   {
@@ -92,13 +96,13 @@
   {
     width: 100%;
     height: 50px;
-    background: #FFFFFF;
-    border: solid 1px #e5e5e5;
+    background: $white;
+    border: solid 1px $gray-100;
     border-radius: 5px;
     padding-left: 25px;
     font-size: 16px;
     outline: none;
-    color: #0e8ce4;
+    color: theme-color('primary');
   }
   .newsletter_input:focus
   {
@@ -137,8 +141,8 @@
     right: 0;
     width: 153px;
     height: 50px;
-    background: #0e8ce4;
-    color: #FFFFFF;
+    background: theme-color('primary');
+    color: $white;
     line-height: 50px;
     font-size: 18px;
     border: none;
@@ -160,7 +164,7 @@
   .newsletter_unsubscribe_link a
   {
     font-size: 10px;
-    color: #0e8ce4;
+    color: theme-color('primary');
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.1em;
@@ -168,7 +172,7 @@
   }
   .newsletter_unsubscribe_link a:hover
   {
-    color: #0d82d3;
+    color: darken(theme-color('primary'), 20);
   }
 </style>
 
@@ -180,7 +184,9 @@
       <div class="col">
         <div class="newsletter_container d-flex flex-lg-row flex-column align-items-lg-center align-items-center justify-content-lg-start justify-content-center">
           <div class="newsletter_title_container">
-            <div class="newsletter_icon"><img src="images/send.png" alt=""></div>
+            <div class="newsletter_icon">
+              <img src="images/send.png" alt="mail icon">
+            </div>
             <div class="newsletter_title">Sign up for Newsletter</div>
             <div class="newsletter_text"><p>...and receive exclusive offers.</p></div>
           </div>
@@ -205,7 +211,9 @@
               </fieldset>
               <button class="newsletter_button">Subscribe</button>
             </form>
-            <div class="newsletter_unsubscribe_link"><a href="#">unsubscribe</a></div>
+            <div class="newsletter_unsubscribe_link">
+              <a href="#">unsubscribe</a>
+            </div>
           </div>
         </div>
       </div>

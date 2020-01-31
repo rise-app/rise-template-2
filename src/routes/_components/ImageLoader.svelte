@@ -11,7 +11,12 @@
     ABORTED: 'aborted'
   }
 
-  export let src, alt, placeholder= 'https://via.placeholder.com/100x100.png', classes, width
+  export let
+    src,
+    alt,
+    placeholder = '/branding/placeholders/image-not-found.png',
+    classes,
+    width
 
   let status = Status.LOADING
 

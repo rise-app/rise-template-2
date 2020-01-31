@@ -2,11 +2,9 @@
 
 ## Legal
 
-This repository and it's contents are STRICTLY CONFIDENTIAL and is not authorized for distribution without the written consent of Residual Internet Sales Engine INC. Unauthorized use of this repository may result in punitive actions to the full extent of Delaware state law.
+This is a demo application, and should be used at your own risk.
 
-If you are unsure of your authorization status for the use of the repository, contact Scott Wyatt <scott@rise.store> and immediately delete this repository from your machines until further confirmation.
-
-[![CircleCI](https://circleci.com/gh/CaliStyle/rise-template.svg?style=svg&circle-token=4463d578f623010b5194eead609f355683bb8fc4)](https://circleci.com/gh/CaliStyle/rise-template)
+[![CircleCI](https://circleci.com/gh/rise-app/rise-template-2.svg?style=svg&circle-token=4463d578f623010b5194eead609f355683bb8fc4)](https://circleci.com/gh/rise-app/rise-template-2)
 
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 
@@ -17,7 +15,7 @@ If you are unsure of your authorization status for the use of the repository, co
 However you get the code, you can install dependencies and run the project in development mode with:
 
 ```bash
-cd rise-template
+cd rise-template-2
 npm install # or yarn
 npm run dev
 ```
