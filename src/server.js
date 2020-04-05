@@ -87,7 +87,6 @@ polka() // You can also use Express
     next()
   })
   .use(function(req, res, next) {
-    console.log('BRK req.host', req.headers.host)
     // console.log("ENV FORCE_HTTPS", process.env.FORCE_HTTPS, req.headers['x-forwarded-proto'])
     if (process.env.FORCE_HTTPS) {
       if (req.headers['x-forwarded-proto'] !== 'https') {
@@ -100,6 +99,7 @@ polka() // You can also use Express
     next()
   })
   .use(
+    // TODO: It's likely you will want to use a Redis Store for this instead of a file session
     session({
       secret: 'risebyrise',
       resave: false,

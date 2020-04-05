@@ -9,8 +9,10 @@ const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 
 const pkg = require('./package.json');
 
+const PORT = process.env.PORT;
 const RISE_DEFAULT_CHANNEL = process.env.RISE_DEFAULT_CHANNEL;
 const RISE_API_PUBLIC = process.env.RISE_API_PUBLIC;
+const RISE_LIVE_MODE = process.env.RISE_LIVE_MODE;
 const SITE_URL = process.env.SITE_URL;
 const API_URL = process.env.API_URL;
 const GATEWAY_UUID = process.env.GATEWAY_UUID;
@@ -104,12 +106,14 @@ module.exports = {
         ...sapperEnv(),
         'process.browser': true,
         'process.env.NODE_ENV': JSON.stringify(mode),
+        'process.env.PORT': JSON.stringify(PORT),
         'process.env.API_URL': JSON.stringify(API_URL),
         'process.env.SITE_URL': JSON.stringify(SITE_URL),
         'process.env.GATEWAY_UUID': JSON.stringify(GATEWAY_UUID),
         'process.env.GATEWAY_PUBLIC': JSON.stringify(GATEWAY_PUBLIC),
         'process.env.RISE_API_PUBLIC': JSON.stringify(RISE_API_PUBLIC),
-        'process.env.RISE_DEFAULT_CHANNEL': JSON.stringify(RISE_DEFAULT_CHANNEL)
+        'process.env.RISE_DEFAULT_CHANNEL': JSON.stringify(RISE_DEFAULT_CHANNEL),
+        'process.env.RISE_LIVE_MODE': JSON.stringify(RISE_LIVE_MODE),
       }),
     ].filter(Boolean),
     devtool: dev && 'inline-source-map'

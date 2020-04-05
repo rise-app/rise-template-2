@@ -148,9 +148,13 @@
   let tags = offer ? offer.tags : 'offer'
 
   let inCart
-  $: inCart = $session.cart
-    && $session.cart.items
-    && $session.cart.items.find(i => i.offer_uuid === offer_uuid)
+  $:
+  {
+    // inCart = $session.cart
+    //         && $session.cart.items
+    //         && ($session.cart.items || []).find(i => i.offer_uuid === offer_uuid)
+    console.log('brk session inCart', $session && $session.cart ? $session.cart.items : null)
+  }
 
   async function addItemToCart(item) {
     // Disable Buttons

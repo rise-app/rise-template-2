@@ -3,11 +3,32 @@
   import { riseQuery, pluckQuery } from 'query'
   import { rise as riseConfig } from 'config'
 
+  const countriesReq = async (session_uuid, token) => rise.channelPublicCountry.list({}, {
+    session: session_uuid,
+    token: token,
+    query: {
+      limit: 100
+    }
+  })
+
+  const countryProvincesReq = async (session_uuid, token, country_code) => rise.channelPublicCountryProvince.list({}, {
+    session: session_uuid,
+    token: token,
+    params: {
+      country_code
+    },
+    query: {
+      limit: 100
+    }
+  })
+
   // the (optional) preload function takes a
   // `{ path, params, query }` object and turns it into
   // the data we need to render the page
   export async function preload({path, params, query}, {token, session_uuid, channel}) {
-
+    return {
+      channel_uuid: channel
+    }
   }
 </script>
 
@@ -26,6 +47,7 @@
   import { CreditCard } from '../../_components/CreditCard'
   import LoginForm from '../../_components/forms/LoginForm.svelte'
   import Dialog, { Title, Content, Actions } from '@smui/dialog'
+  import { RisePaymentForm, RisePaymentPreview } from '@rise/payment-form/src/components/components.module'
 
   import Modal from '../../_components/material/modal/Modal'
 
@@ -47,12 +69,14 @@
   }
 
 
-  let cart = {}, items = []
+  let cart = {},
+      items = [],
+      sources = []
+
   $: cart = $session.cart || {}
   $: items = $session.cart && $session.cart.items
       ? $session.cart.items
       : []
-
 
   let
     inProgress = false,
@@ -64,7 +88,11 @@
     registerFormValue,
     billingFormValue,
     shippingFormValue,
-    shippingMatchesBilling = true
+    shippingMatchesBilling = true,
+    paymentFormValue = {
+      // amount: 100,
+      // gateway_token: null
+    }
 
   // WEIRD but works
   $: if ($session.user) {
@@ -107,13 +135,7 @@
   async function listCountries() {
     countriesLoading = true
 
-    return rise.channelPublicCountry.list({}, {
-      session: $session.session_uuid,
-      token: $session.token,
-      query: {
-        limit: 100
-      }
-    })
+    return countriesReq($session.session_uuid, $session.token)
       .then(results => {
         countriesLoading = false
         countries = results.data
@@ -129,16 +151,7 @@
   async function listCountryProvinces(country_code) {
     provincesLoading = true
 
-    return rise.channelPublicCountryProvince.list({}, {
-      session: $session.session_uuid,
-      token: $session.token,
-      params: {
-        country_code
-      },
-      query: {
-        limit: 100
-      }
-    })
+    return countryProvincesReq($session.session_uuid, $session.token, country_code)
       .then(results => {
         provincesLoading = false
         provinces = results.data
@@ -327,9 +340,10 @@
   }
 
   async function checkout(details) {
+    console.log('BRK checkout', details)
     // Disable Btns
     inProgress = true
-    return put(`auth/session/cart/checkout`, details, {}, $session.token, $session.session_uuid)
+    return put(`auth/session/cart/checkout`, {}, {}, $session.token, $session.session_uuid)
       .then(response => {
 
         // re-enable Btns
@@ -375,6 +389,26 @@
   /************************
    * UTILITIES
    ************************/
+
+  let demoToken, demoSuccess, demoFailed, demoEdit
+  function token(event) {
+    console.log('HAVE TOKEN', event)
+    demoToken = event.detail
+    paymentFormValue.gateway_token = event.detail
+    dialogPayment.close()
+  }
+  function success(event) {
+    console.log('HAVE SUCCESS', event)
+    demoSuccess = event.detail
+  }
+  function failed(event) {
+    console.log('HAVE FAILED', event)
+    demoFailed = event.detail
+  }
+  function edit(event) {
+    console.log('EDIT CLICKED!', event)
+    demoEdit = event.detail
+  }
 
   // Load the countries on mounting of the component
   onMount(async () => {
@@ -424,8 +458,8 @@
     <Steps on:complete={checkout} {inProgress} preloading="{$preloading}">
       <StepList>
         <Step>Account</Step>
-        <Step>Billing</Step>
-        <Step>Shipping</Step>
+        <Step>Address</Step>
+        <Step>Payment</Step>
       </StepList>
 
       <StepPanel>
@@ -494,35 +528,25 @@
             </div>
           </div>
           <div class="list-group-item">
-            <h5 class="text-muted">Payment Information</h5>
+            <h5 class="text-muted">
+              Shipping Information
+            </h5>
 
-            <a on:click={e=> dialogPayment.open()}>OPEN</a>
-          </div>
-        </div>
-      </StepPanel>
-      <StepPanel>
-        <div class="mt-2 mb-2">
-          <div class="list-group">
-            <div class="list-group-item">
-              <h5 class="text-muted">
-                Shipping Information
-              </h5>
+            <fieldset class="form-group">
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="shipping_matches_billing"
+                  bind:checked="{shippingMatchesBilling}"
+                >
+                <label class="form-check-label" for="shipping_matches_billing">
+                  My Shipping Address is the same as Billing Address
+                </label>
+              </div>
+            </fieldset>
 
-              <fieldset class="form-group">
-                <div class="form-check">
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    id="shipping_matches_billing"
-                    bind:checked="{shippingMatchesBilling}"
-                  >
-                  <label class="form-check-label" for="shipping_matches_billing">
-                    My Shipping Address is the same as Billing Address
-                  </label>
-                </div>
-              </fieldset>
-
-              {#if !shippingMatchesBilling}
+            {#if !shippingMatchesBilling}
               <AddressForm
                 value="{shippingFormValue}"
                 inProgress={ inProgress }
@@ -533,7 +557,22 @@
                 on:countrySelected="{e => listCountryProvinces(e.detail)}"
                 on:address={e=> setShipping(e.detail)}
               />
-              {/if}
+            {/if}
+          </div>
+        </div>
+      </StepPanel>
+      <StepPanel>
+        <div class="mt-2 mb-2">
+          <div class="list-group">
+            <div class="list-group-item">
+              <h5 class="text-muted">Payment Information</h5>
+
+              <a
+                class="btn btn-primary"
+                on:click={e=> dialogPayment.open()}
+              >
+                Add Payment Method
+              </a>
             </div>
           </div>
         </div>
@@ -548,5 +587,52 @@
   aria-describedby="dialog-contact-content"
   on:MDCDialog:closed={closeHandler}
 >
-  <CreditCard />
+<!--  <CreditCard />-->
+  <RisePaymentForm
+    type="card"
+    rise="{{
+      channel_uuid: riseConfig.channel_uuid,
+      key_public: riseConfig.public_key,
+      live_mode: riseConfig.live_mode
+    }}"
+    cart="{{}}"
+    customer="{{}}"
+    nexio="{{
+      live_mode: riseConfig.live_mode,
+      processingOptions: {
+        checkFraud: true,
+        verifyCvc: false,
+        // verifyAvs: 3,
+        check3ds: true,
+        saveCardToken: true,
+        verboseResponse: true,
+        webhookUrl: '',
+        webhookFailUrl: ''
+      },
+      publicKey: 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvWpIQFjQQCPpaIlJKpeg irp5kLkzLB1AxHmnLk73D3TJbAGqr1QmlsWDBtMPMRpdzzUM7ZwX3kzhIuATV4Pe 7RKp3nZlVmcrT0YCQXBrTwqZNh775z58GP2kZs+gVfNqBampJPzSB/hB62KkByhE Cn6grrRjiAVwJyZVEvs/2vrxaEpO+aE16emtX12RgI5JdzdOiNyZEQteU6zRBRJE ocPWVxExaOpVVVJ5+UnW0LcalzA+lRGRTrQJ5JguAPiAOzRPTK/lYFFpCAl/F8wt oAVG1c8zO2NcQ0Pko+fmeidRFxJ/did2btV+9Mkze3mBphwFmvnxa35LF+Cs/XJHDwIDAQAB'
+    }}"
+    card="{{
+      gateway_type: 'nexio',
+      card_type: null,
+      card_name: '',
+      card_year: '',
+      card_month: '',
+      email: null,
+      phone: null,
+      address_1: null,
+      address_2: null,
+      address_3: null,
+      city: null,
+      postal_code: null,
+      province_code: null,
+      country_code: null,
+      is_processing: false,
+      errors: null,
+      disabled_fields: [],
+      submit_text: 'Save Card'
+    }}"
+    on:token={token}
+    on:success={success}
+    on:failed={failed}
+  />
 </Modal>

@@ -19,8 +19,8 @@ export function put(req, res) {
 
       // Get the new Session Cart
       return rise.channelAuth.sessionCart(cart, {
-        session: req.session.session_uuid || req.headers.session,
-        token: req.session.token || req.headers.authorization,
+        session: response.session || req.session.session_uuid || req.headers.session,
+        token: response.token || req.session.token || req.headers.authorization,
         params: {
           channel_uuid: channel_uuid
         }

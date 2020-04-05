@@ -126,7 +126,9 @@
     items_limit = 10,
     items_sort = [['created_at', 'DESC']],
 
-    up_sells_query = {},
+    up_sells_query = {
+      limit: 3
+    },
     up_sells_loading = false,
     up_sells = [],
     up_sells_errors = null,
@@ -135,7 +137,9 @@
     up_sells_limit = 10,
     up_sells_sort = [['position', 'ASC']],
 
-    down_sells_query = {},
+    down_sells_query = {
+      limit: 3
+    },
     down_sells_loading = false,
     down_sells = [],
     down_sells_errors = null,

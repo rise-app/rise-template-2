@@ -73,7 +73,7 @@ jobs:
       - heroku_sandbox/install_dependencies
       - heroku_sandbox/docker-build-release:
           app-name: $HEROKU_APP_NAME_SANDBOX
-          app-arg: NODE_ENV=development,SITE_URL=https://app.sandbox.rise.com,API_URL=https://api.sandbox.rise.com,API_URL_TEST=https://api.sandbox.rise.com,RISE_API_PUBLIC=pk_00000000-0000-0000-0000-000000000000,RISE_DEFAULT_CHANNEL=00000000-0000-0000-0000-000000000000,NPM_CONFIG_PRODUCTION=false,GATEWAY_UUID=,GATEWAY_PUBLIC=
+          app-arg: NODE_ENV=development,SITE_URL=https://demo.sandbox.rise.store,API_URL=https://api.sandbox.rise.store,API_URL_TEST=https://api.sandbox.rise.store,RISE_API_PUBLIC=pk_00000000-0000-0000-0000-000000000000,RISE_DEFAULT_CHANNEL=00000000-0000-0000-0000-000000000000,NPM_CONFIG_PRODUCTION=false,GATEWAY_UUID=,GATEWAY_PUBLIC=
           app-type: $HEROKU_APP_NAME_TYPE
 
   heroku_staging:
@@ -83,7 +83,7 @@ jobs:
       - heroku_staging/install_dependencies
       - heroku_staging/docker-build-release:
           app-name: $HEROKU_APP_NAME_STAGING
-          app-arg: NODE_ENV=development,SITE_URL=https://app.beta.rise.com,API_URL=https://api.beta.rise.com,API_URL_TEST=https://api.beta.rise.com,RISE_API_PUBLIC=pk_00000000-0000-0000-0000-000000000000,RISE_DEFAULT_CHANNEL=00000000-0000-0000-0000-000000000000,NPM_CONFIG_PRODUCTION=false,GATEWAY_UUID=,GATEWAY_PUBLIC=
+          app-arg: NODE_ENV=development,SITE_URL=https://app.beta.rise.store,API_URL=https://api.beta.rise.store,API_URL_TEST=https://api.beta.rise.store,RISE_API_PUBLIC=pk_00000000-0000-0000-0000-000000000000,RISE_DEFAULT_CHANNEL=00000000-0000-0000-0000-000000000000,NPM_CONFIG_PRODUCTION=false,GATEWAY_UUID=,GATEWAY_PUBLIC=
           app-type: $HEROKU_APP_NAME_TYPE
 
   heroku_production:
@@ -93,5 +93,5 @@ jobs:
       - heroku_production/install_dependencies
       - heroku_production/docker-build-release:
           app-name: $HEROKU_APP_NAME
-          app-arg: NODE_ENV=production,SITE_URL=https://app.rise.com,API_URL=https://api.rise.com,API_URL_TEST=https://api.beta.rise.com,RISE_API_PUBLIC=pk_00000000-0000-0000-0000-000000000000,RISE_DEFAULT_CHANNEL=00000000-0000-0000-0000-000000000000,NPM_CONFIG_PRODUCTION=false,GATEWAY_UUID=,GATEWAY_PUBLIC=
+          app-arg: NODE_ENV=production,SITE_URL=https://app.rise.store,API_URL=https://api.rise.store,API_URL_TEST=https://api.beta.rise.store,RISE_API_PUBLIC=pk_00000000-0000-0000-0000-000000000000,RISE_DEFAULT_CHANNEL=00000000-0000-0000-0000-000000000000,NPM_CONFIG_PRODUCTION=false,GATEWAY_UUID=,GATEWAY_PUBLIC=
           app-type: $HEROKU_APP_NAME_TYPE
