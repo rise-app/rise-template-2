@@ -1,10 +1,12 @@
+![RiSE Logo][logo]
+
 # RiSE Template Application
 
 ## Legal
 
 This is a demo application, and should be used at your own risk.
 
-[![CircleCI](https://circleci.com/gh/rise-app/rise-template-2.svg?style=svg&circle-token=4463d578f623010b5194eead609f355683bb8fc4)](https://circleci.com/gh/rise-app/rise-template-2)
+[![Build Status][ci-image]][ci-url]
 
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 
@@ -77,3 +79,7 @@ npm install -D @sveltejs/svelte-virtual-list
 ## Bugs and feedback
 
 Sapper is in early development, and may have the odd rough edge here and there. Please be vocal over on the [Sapper issue tracker](https://github.com/sveltejs/sapper/issues).
+
+[logo]: https://rise.store/wp-content/uploads/2019/06/rise_sized_75x150_blk-01-01-01.png "RiSE"
+[ci-image]: https://img.shields.io/circleci/project/github/rise-app/rise-template-2/master.svg
+[ci-url]: https://circleci.com/gh/rise-app/rise-template-2/tree/master
