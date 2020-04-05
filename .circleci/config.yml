@@ -3,8 +3,6 @@ version: 2.1
 orbs:
   cypress: cypress-io/cypress@1.10.0
   heroku_sandbox: rise/deploy-to-heroku@0.0.6
-  heroku_staging: rise/deploy-to-heroku@0.0.6
-  heroku_production: rise/deploy-to-heroku@0.0.6
 
 workflows:
   build_test_deploy:
@@ -19,20 +17,6 @@ workflows:
           requires:
             - cypress/run
           filters:
-            branches:
-              only: master
-      - heroku_staging:
-          requires:
-            - cypress/run
-          filters:
-            branches:
-              only: master
-      - heroku_production:
-          requires:
-            - cypress/run
-          filters:
-            tags:
-              only: /^v*/
             branches:
               only: master
 
@@ -73,25 +57,5 @@ jobs:
       - heroku_sandbox/install_dependencies
       - heroku_sandbox/docker-build-release:
           app-name: $HEROKU_APP_NAME_SANDBOX
-          app-arg: NODE_ENV=development,SITE_URL=https://demo.sandbox.rise.store,API_URL=https://api.sandbox.rise.store,API_URL_TEST=https://api.sandbox.rise.store,RISE_API_PUBLIC=pk_00000000-0000-0000-0000-000000000000,RISE_DEFAULT_CHANNEL=00000000-0000-0000-0000-000000000000,NPM_CONFIG_PRODUCTION=false,GATEWAY_UUID=,GATEWAY_PUBLIC=
-          app-type: $HEROKU_APP_NAME_TYPE
-
-  heroku_staging:
-    executor: heroku_staging/node # Uses the basic buildpack-deps image, which has the prerequisites for installing heroku's CLI.
-    steps:
-      - heroku_staging/setup
-      - heroku_staging/install_dependencies
-      - heroku_staging/docker-build-release:
-          app-name: $HEROKU_APP_NAME_STAGING
-          app-arg: NODE_ENV=development,SITE_URL=https://app.beta.rise.store,API_URL=https://api.beta.rise.store,API_URL_TEST=https://api.beta.rise.store,RISE_API_PUBLIC=pk_00000000-0000-0000-0000-000000000000,RISE_DEFAULT_CHANNEL=00000000-0000-0000-0000-000000000000,NPM_CONFIG_PRODUCTION=false,GATEWAY_UUID=,GATEWAY_PUBLIC=
-          app-type: $HEROKU_APP_NAME_TYPE
-
-  heroku_production:
-    executor: heroku_production/node # Uses the basic buildpack-deps image, which has the prerequisites for installing heroku's CLI.
-    steps:
-      - heroku_production/setup
-      - heroku_production/install_dependencies
-      - heroku_production/docker-build-release:
-          app-name: $HEROKU_APP_NAME
-          app-arg: NODE_ENV=production,SITE_URL=https://app.rise.store,API_URL=https://api.rise.store,API_URL_TEST=https://api.beta.rise.store,RISE_API_PUBLIC=pk_00000000-0000-0000-0000-000000000000,RISE_DEFAULT_CHANNEL=00000000-0000-0000-0000-000000000000,NPM_CONFIG_PRODUCTION=false,GATEWAY_UUID=,GATEWAY_PUBLIC=
+          app-arg: NODE_ENV=development,SITE_URL=https://demo.sandbox.rise.store,API_URL=https://api.sandbox.rise.store,API_URL_TEST=https://api.sandbox.rise.store,RISE_API_PUBLIC=pk_test_c4beb40b-1651-48ef-a821-c28a81e98ade,RISE_DEFAULT_CHANNEL=c034ad64-87c9-479c-ae5e-8c9aedf0b1f3,NPM_CONFIG_PRODUCTION=false,GATEWAY_UUID=,GATEWAY_PUBLIC=
           app-type: $HEROKU_APP_NAME_TYPE
