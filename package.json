@@ -37,7 +37,7 @@
     "sapper-environment": "^1.0.1",
     "session-file-store": "^1.2.0",
     "sirv": "^0.4.0",
-    "standard-version": "^7.0.0",
+    "standard-version": "^8.0.1",
     "svelte-content-loader": "^1.1.2",
     "svelte-debugger": "^1.0.3",
     "svelte-i18n": "^2.2.2",
