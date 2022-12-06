@@ -32,7 +32,7 @@
     "moment": "^2.24.0",
     "node-fetch": "^2.1.2",
     "polka": "^0.5.2",
-    "qs": "^6.9.1",
+    "qs": "^6.9.7",
     "sapper": "^0.27.4",
     "sapper-environment": "^1.0.1",
     "session-file-store": "^1.2.0",
